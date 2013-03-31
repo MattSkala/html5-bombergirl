@@ -11,6 +11,8 @@ InputEngine = Class.extend({
      */
     actions: {},
 
+    listeners: [],
+
     init: function() {
     },
 
@@ -19,6 +21,7 @@ InputEngine = Class.extend({
         this.bind(37, 'left');
         this.bind(40, 'down');
         this.bind(39, 'right');
+        this.bind(32, 'bomb');
 
         document.addEventListener('keydown', this.onKeyDown);
         document.addEventListener('keyup', this.onKeyUp);
@@ -35,6 +38,14 @@ InputEngine = Class.extend({
         var action = gInputEngine.bindings[event.keyCode];
         if (action) {
             gInputEngine.actions[action] = false;
+
+            var listeners = gInputEngine.listeners[action];
+            if (listeners) {
+                for (var i = 0; i < listeners.length; i++) {
+                    var listener = listeners[i];
+                    listener();
+                }
+            }
         }
     },
 
@@ -44,6 +55,11 @@ InputEngine = Class.extend({
      */
     bind: function(key, action) {
         this.bindings[key] = action;
+    },
+
+    addListener: function(action, listener) {
+        this.listeners[action] = this.listeners[action] || new Array();
+        this.listeners[action].push(listener);
     }
 });
 

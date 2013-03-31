@@ -1,4 +1,4 @@
-Player = Class.extend({
+Player = Entity.extend({
     /**
      * Moving speed in pixels per frame
      */
@@ -19,9 +19,14 @@ Player = Class.extend({
 
     hit: 13,
 
-    init: function(img) {
+    /**
+     * Max number of bombs user can spawn
+     */
+    bombsMax: 1,
+
+    init: function() {
         var spriteSheet = new createjs.SpriteSheet({
-            images: [img],
+            images: [gGameEngine.playerImg],
             frames: { width: this.size.w, height: this.size.h, regX: 14, regY: 7 },
             animations: {
                 idle: [0, 0, 'idle'],
