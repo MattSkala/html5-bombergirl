@@ -35,6 +35,8 @@ GameEngine = Class.extend({
     },
 
     setup: function() {
+        gInputEngine.setup();
+
         // Set background
         var tilesX = 19;
         var tilesY = 13;

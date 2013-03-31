@@ -1,4 +1,5 @@
 Player = Class.extend({
+    velocity: 5,
     animation: null,
 
     init: function(img) {
@@ -17,6 +18,15 @@ Player = Class.extend({
     },
 
     update: function() {
+        if (gInputEngine.actions['up']) {
+            this.animation.y -= this.velocity;
+        } else if (gInputEngine.actions['down']) {
+            this.animation.y += this.velocity;
+        } else if (gInputEngine.actions['left']) {
+            this.animation.x -= this.velocity;
+        } else if (gInputEngine.actions['right']) {
+            this.animation.x += this.velocity;
+        }
     }
 
 });
