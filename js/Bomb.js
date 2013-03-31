@@ -72,6 +72,25 @@ Bomb = Entity.extend({
             }
         }
 
+        // Show fire
+        var fireSpriteSheet = new createjs.SpriteSheet({
+            images: [gGameEngine.fireImg],
+            frames: { width: 33, height: 38, regX: 0, regY: 0 },
+            animations: {
+                idle: [0, 11, null, 5],
+            }
+        });
+        var fire = new createjs.BitmapAnimation(fireSpriteSheet);
+        fire.gotoAndPlay('idle');
+        var pixels = gGameEngine.convertToBitmapPosition(this.position.x, this.position.y);
+        fire.x = pixels.x + 2;
+        fire.y = pixels.y - 5;
+        gGameEngine.stage.addChild(fire);
+        fire.addEventListener('animationend', function() {
+            gGameEngine.stage.removeChild(fire);
+        });
+
+
         this.remove();
     },
 
