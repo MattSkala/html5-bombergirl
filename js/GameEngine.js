@@ -1,5 +1,7 @@
 GameEngine = Class.extend({
     tileSize: 32,
+    tilesX: 19,
+    tilesY: 13,
 
     stage: null,
     player: null,
@@ -37,16 +39,12 @@ GameEngine = Class.extend({
     setup: function() {
         gInputEngine.setup();
 
-        // Set background
-        var tilesX = 19;
-        var tilesY = 13;
-
         // Draw tiles
-        for (var i = 0; i < tilesY; i++) {
-            for (var j = 0; j < tilesX; j++) {
+        for (var i = 0; i < this.tilesY; i++) {
+            for (var j = 0; j < this.tilesX; j++) {
                 var tile;
                 var isWall;
-                if ((i == 0 || j == 0 || i == tilesY - 1 || j == tilesX - 1)
+                if ((i == 0 || j == 0 || i == this.tilesY - 1 || j == this.tilesX - 1)
                     || (j % 2 == 0 && i % 2 == 0)) {
                     tile = new createjs.Bitmap(this.tilesImgs.wall);
                     isWall = true;
@@ -60,9 +58,9 @@ GameEngine = Class.extend({
 
                 // Draw wood tiles
                 if (!isWall && !(i <= 2 && j <= 2)
-                    && !(i >= tilesY - 3 && j >= tilesX - 3)
-                    && !(i <= 2 && j >= tilesX - 3)
-                    && !(i >= tilesY - 3 && j <= 2)) {
+                    && !(i >= this.tilesY - 3 && j >= this.tilesX - 3)
+                    && !(i <= 2 && j >= this.tilesX - 3)
+                    && !(i >= this.tilesY - 3 && j <= 2)) {
                     var wood = new createjs.Bitmap(this.tilesImgs.wood);
                     wood.x = j * this.tileSize;
                     wood.y = i * this.tileSize;
@@ -73,9 +71,9 @@ GameEngine = Class.extend({
 
         // Draw player
         this.player = new Player(this.playerImg);
-        this.player.animation.x = this.tileSize * 1.5;
-        this.player.animation.y = this.tileSize * 1.1;
-        this.stage.addChild(this.player.animation);
+        this.player.bmp.x = this.tileSize * 1.5;
+        this.player.bmp.y = this.tileSize * 1.1;
+        this.stage.addChild(this.player.bmp);
 
         // Start loop
         createjs.Ticker.addEventListener("tick", function() { gGameEngine.update(); });
