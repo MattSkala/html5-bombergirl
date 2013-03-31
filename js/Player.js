@@ -5,6 +5,11 @@ Player = Entity.extend({
     velocity: 2,
 
     /**
+     * Entity position on map grid
+     */
+    position: {},
+
+    /**
      * Bitmap dimensions
      */
     size: {
@@ -22,7 +27,7 @@ Player = Entity.extend({
     /**
      * Max number of bombs user can spawn
      */
-    bombsMax: 1,
+    bombsMax: 10,
 
     init: function() {
         var spriteSheet = new createjs.SpriteSheet({
@@ -66,8 +71,16 @@ Player = Entity.extend({
             if (this.handleCollision(position)) {
                 this.bmp.x = position.x;
                 this.bmp.y = position.y;
+                this.updatePosition();
             }
         }
+    },
+
+    /**
+     * Calculates and updates entity position according to its actual bitmap position
+     */
+    updatePosition: function() {
+        this.position = gGameEngine.convertToEntityPosition(this.bmp.x, this.bmp.y);
     },
 
     /**
@@ -80,7 +93,7 @@ Player = Entity.extend({
         // Check possible collision with all wall and wood tiles
         var tiles = gGameEngine.tiles;
         for (var i = 0; i < tiles.length; i++) {
-            var tile = tiles[i];
+            var tile = tiles[i].bmp;
             // early returns speed it up
             var tHit = 10;
             var tX = tile.x + gGameEngine.tileSize * 0.9;

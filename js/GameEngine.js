@@ -55,33 +55,25 @@ GameEngine = Class.extend({
 
         // Draw tiles
         for (var i = 0; i < this.tilesY; i++) {
-            var y = i * this.tileSize;
             for (var j = 0; j < this.tilesX; j++) {
-                var x = j * this.tileSize;
                 if ((i == 0 || j == 0 || i == this.tilesY - 1 || j == this.tilesX - 1)
                     || (j % 2 == 0 && i % 2 == 0)) {
                     // Wall tiles
-                    var tile = new createjs.Bitmap(this.tilesImgs.wall);
-                    tile.x = x;
-                    tile.y = y;
-                    this.stage.addChild(tile);
+                    var tile = new Tile('wall', {x: j, y: i});
+                    this.stage.addChild(tile.bmp);
                     this.tiles.push(tile);
                 } else {
                     // Grass tiles
-                    var tile = new createjs.Bitmap(this.tilesImgs.grass);
-                    tile.x = x;
-                    tile.y = y;
-                    this.stage.addChild(tile);
+                    var tile = new Tile('grass', {x: j, y: i});
+                    this.stage.addChild(tile.bmp);
 
                     // Wood tiles
                     if (!(i <= 2 && j <= 2)
                         && !(i >= this.tilesY - 3 && j >= this.tilesX - 3)
                         && !(i <= 2 && j >= this.tilesX - 3)
                         && !(i >= this.tilesY - 3 && j <= 2)) {
-                        var wood = new createjs.Bitmap(this.tilesImgs.wood);
-                        wood.x = x;
-                        wood.y = y;
-                        this.stage.addChild(wood);
+                        var wood = new Tile('wood', {x: j, y: i});
+                        this.stage.addChild(wood.bmp);
                         this.tiles.push(wood);
                     }
                 }
@@ -92,6 +84,7 @@ GameEngine = Class.extend({
         this.player = new Player();
         this.player.bmp.x = this.tileSize * 1.5;
         this.player.bmp.y = this.tileSize * 1.1;
+        this.player.updatePosition();
         this.stage.addChild(this.player.bmp);
 
         // Subscribe to bomb key
@@ -114,22 +107,27 @@ GameEngine = Class.extend({
 
     spawnBomb: function() {
         if (gGameEngine.bombs.length < gGameEngine.player.bombsMax) {
-            var bomb = new Bomb();
-            bomb.bmp.x = gGameEngine.player.bmp.x - bomb.size.w/2;
-            bomb.bmp.y = gGameEngine.player.bmp.y;
+            var bomb = new Bomb(gGameEngine.player.position);
             gGameEngine.stage.addChild(bomb.bmp);
             gGameEngine.bombs.push(bomb);
         }
     },
 
-    removeBomb: function(entity) {
-        this.stage.removeChild(entity.bmp);
-        for (var i = 0; i < this.bombs.length; i++) {
-            var bomb = this.bombs[i];
-            if (entity == bomb) {
-                this.bombs.splice(i, 1);
-            }
-        }
+    /**
+     * Convert bitmap pixels position to entity on grid position
+     */
+    convertToEntityPosition: function(x, y) {
+        var position = {};
+        position.x = Math.floor(x / gGameEngine.tileSize);
+        position.y = Math.round(y /gGameEngine.tileSize);
+        return position;
+    },
+
+    convertToBitmapPosition: function(x, y) {
+        var position = {};
+        position.x = x * gGameEngine.tileSize;
+        position.y = y * gGameEngine.tileSize;
+        return position;
     }
 });
 

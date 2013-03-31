@@ -1,5 +1,10 @@
 Bomb = Entity.extend({
-    /*
+    /**
+     * Entity position on map grid
+     */
+    position: {},
+
+    /**
      * Bitmap dimensions
      */
     size: {
@@ -24,7 +29,7 @@ Bomb = Entity.extend({
 
     exploded: false,
 
-    init: function() {
+    init: function(position) {
         var spriteSheet = new createjs.SpriteSheet({
             images: [gGameEngine.bombImg],
             frames: { width: this.size.w, height: this.size.h, regX: 0, regY: 0 },
@@ -34,6 +39,12 @@ Bomb = Entity.extend({
         });
         this.bmp = new createjs.BitmapAnimation(spriteSheet);
         this.bmp.gotoAndPlay('idle');
+
+        this.position = position;
+
+        var pixels = gGameEngine.convertToBitmapPosition(position.x, position.y);
+        this.bmp.x = pixels.x + this.size.w / 4;
+        this.bmp.y = pixels.y + this.size.h / 4;
     },
 
     update: function() {
@@ -47,6 +58,31 @@ Bomb = Entity.extend({
 
     explode: function() {
         this.exploded = true;
-        gGameEngine.removeBomb(this);
+
+        // Burn all wood around!
+        var tiles = gGameEngine.tiles;
+        console.log('Explded: ' + this.position.x + ":" + this.position.y);
+        for (var i = 0; i < tiles.length; i++) {
+            var tile = tiles[i];
+            if (tile.material == 'wood'
+                && ((tile.position.x == this.position.x - 1 && tile.position.y == this.position.y)
+                    || (tile.position.x == this.position.x + 1 && tile.position.y == this.position.y)
+                    || (tile.position.x == this.position.x && tile.position.y == this.position.y - 1)
+                    || (tile.position.x == this.position.x && tile.position.y == this.position.y + 1) )) {
+                tile.remove();
+            }
+        }
+
+        this.remove();
+    },
+
+    remove: function() {
+        gGameEngine.stage.removeChild(this.bmp);
+        for (var i = 0; i < gGameEngine.bombs.length; i++) {
+            var bomb = gGameEngine.bombs[i];
+            if (this == bomb) {
+                gGameEngine.bombs.splice(i, 1);
+            }
+        }
     }
 });
