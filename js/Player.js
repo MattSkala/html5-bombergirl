@@ -22,14 +22,12 @@ Player = Entity.extend({
      */
     bmp: null,
 
-    hit: 13,
-
     /**
      * Max number of bombs user can spawn
      */
     bombsMax: 10,
 
-    init: function() {
+    init: function(position) {
         var spriteSheet = new createjs.SpriteSheet({
             images: [gGameEngine.playerImg],
             frames: { width: this.size.w, height: this.size.h, regX: 14, regY: 7 },
@@ -42,6 +40,11 @@ Player = Entity.extend({
             }
         });
         this.bmp = new createjs.BitmapAnimation(spriteSheet);
+
+        this.position = position;
+        var pixels = gGameEngine.convertToBitmapPosition(position.x, position.y);
+        this.bmp.x = pixels.x + this.size.w / 2;
+        this.bmp.y = pixels.y + this.size.h / 2;
     },
 
     update: function() {
@@ -87,25 +90,24 @@ Player = Entity.extend({
      * Returns false when collision is detected and we should not move to target position.
      */
     handleCollision: function(position) {
-        var pX = position.x + this.size.w/2;
-        var pY = position.y + this.size.h/2;
+        var player = {};
+        player.left = position.x;
+        player.top = position.y;
+        player.right = player.left + this.size.w * 0.40;
+        player.bottom = player.top + this.size.h * 0.7;
 
         // Check possible collision with all wall and wood tiles
         var tiles = gGameEngine.tiles;
         for (var i = 0; i < tiles.length; i++) {
-            var tile = tiles[i].bmp;
-            // early returns speed it up
-            var tHit = 10;
-            var tX = tile.x + gGameEngine.tileSize * 0.9;
-            var tY = tile.y + gGameEngine.tileSize * 0.5;
-            if (tX - tHit > pX + this.hit) { continue; }
-            if (tX + tHit < pX - this.hit) { continue; }
-            if (tY - tHit > pY + this.hit) { continue; }
-            if (tY + tHit < pY - this.hit) { continue; }
+            var tilePosition = tiles[i].position;
 
-            // now do the circle distance test
-            var dist = Math.sqrt(Math.pow(Math.abs(pX - tX), 2) + Math.pow(Math.abs(pY - tY), 2));
-            if (this.hit + tHit > dist) {
+            var tile = {};
+            tile.left = tilePosition.x * gGameEngine.tileSize;
+            tile.top = tilePosition.y * gGameEngine.tileSize;
+            tile.right = tile.left + gGameEngine.tileSize + 10;
+            tile.bottom = tile.top + gGameEngine.tileSize - 5;
+
+            if (gGameEngine.intersectRect(player, tile)) {
                 return false;
             }
         }

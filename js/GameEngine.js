@@ -3,7 +3,7 @@ GameEngine = Class.extend({
     tilesX: 19,
     tilesY: 13,
     size: {},
-    fps: 60,
+    fps: 50,
 
     stage: null,
     player: null,
@@ -81,28 +81,25 @@ GameEngine = Class.extend({
         }
 
         // Draw player
-        this.player = new Player();
-        this.player.bmp.x = this.tileSize * 1.5;
-        this.player.bmp.y = this.tileSize * 1.1;
-        this.player.updatePosition();
+        this.player = new Player({ x: 1, y: 1 });
         this.stage.addChild(this.player.bmp);
 
         // Subscribe to bomb key
         gInputEngine.addListener('bomb', this.spawnBomb);
 
         // Start loop
-        createjs.Ticker.addEventListener("tick", function() { gGameEngine.update(); });
+        createjs.Ticker.addEventListener("tick", gGameEngine.update);
         createjs.Ticker.setFPS(this.fps);
     },
 
     update: function() {
-        this.player.update();
-        for (var i = 0; i < this.bombs.length; i++) {
-            var bomb = this.bombs[i];
+        gGameEngine.player.update();
+        for (var i = 0; i < gGameEngine.bombs.length; i++) {
+            var bomb = gGameEngine.bombs[i];
             bomb.update();
         }
 
-        this.stage.update();
+        gGameEngine.stage.update();
     },
 
     spawnBomb: function() {
@@ -128,6 +125,13 @@ GameEngine = Class.extend({
         position.x = x * gGameEngine.tileSize;
         position.y = y * gGameEngine.tileSize;
         return position;
+    },
+
+    /**
+     * Checks whether two rectangles intersect.
+     */
+    intersectRect: function(a, b) {
+        return (a.left <= b.right && b.left <= a.right && a.top <= b.bottom && b.top <= a.bottom);
     }
 });
 

@@ -61,7 +61,6 @@ Bomb = Entity.extend({
 
         // Burn all wood around!
         var tiles = gGameEngine.tiles;
-        console.log('Explded: ' + this.position.x + ":" + this.position.y);
         for (var i = 0; i < tiles.length; i++) {
             var tile = tiles[i];
             if (tile.material == 'wood'
