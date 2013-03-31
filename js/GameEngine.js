@@ -1,5 +1,8 @@
 GameEngine = Class.extend({
+    tileSize: 32,
+
     stage: null,
+    player: null,
 
     playerImg: null,
     tilesImgs: {},
@@ -10,8 +13,10 @@ GameEngine = Class.extend({
     load: function() {
         console.log("Launching HTML5 Bomberman!");
 
+        // Init canvas
         this.stage = new createjs.Stage("canvas");
 
+        // Load assets
         var queue = new createjs.LoadQueue();
         var that = this;
         queue.addEventListener("complete", function() {
@@ -33,7 +38,6 @@ GameEngine = Class.extend({
         // Set background
         var tilesX = 19;
         var tilesY = 13;
-        var tileSize = 32;
 
         // Draw tiles
         for (var i = 0; i < tilesY; i++) {
@@ -48,8 +52,8 @@ GameEngine = Class.extend({
                     tile = new createjs.Bitmap(this.tilesImgs.grass);
                     isWall = false;
                 }
-                tile.x = j * tileSize;
-                tile.y = i * tileSize;
+                tile.x = j * this.tileSize;
+                tile.y = i * this.tileSize;
                 this.stage.addChild(tile);
 
                 // Draw wood tiles
@@ -58,18 +62,25 @@ GameEngine = Class.extend({
                     && !(i <= 2 && j >= tilesX - 3)
                     && !(i >= tilesY - 3 && j <= 2)) {
                     var wood = new createjs.Bitmap(this.tilesImgs.wood);
-                    wood.x = j * tileSize;
-                    wood.y = i * tileSize;
+                    wood.x = j * this.tileSize;
+                    wood.y = i * this.tileSize;
                     this.stage.addChild(wood);
                 }
             }
         }
+
+        // Draw player
+        this.player = new Player(this.playerImg);
+        this.player.animation.x = this.tileSize * 1.5;
+        this.player.animation.y = this.tileSize * 1.1;
+        this.stage.addChild(this.player.animation);
 
         // Start loop
         createjs.Ticker.addEventListener("tick", function() { gGameEngine.update(); });
     },
 
     update: function() {
+        this.player.update();
         this.stage.update();
     }
 });
