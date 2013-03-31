@@ -2,14 +2,20 @@ GameEngine = Class.extend({
     tileSize: 32,
     tilesX: 19,
     tilesY: 13,
+    size: {},
 
     stage: null,
     player: null,
+    tiles: [],
 
     playerImg: null,
     tilesImgs: {},
 
     init: function() {
+        this.size = {
+            w: this.tileSize * this.tilesX,
+            h: this.tileSize * this.tilesY
+        };
     },
 
     load: function() {
@@ -41,30 +47,35 @@ GameEngine = Class.extend({
 
         // Draw tiles
         for (var i = 0; i < this.tilesY; i++) {
+            var y = i * this.tileSize;
             for (var j = 0; j < this.tilesX; j++) {
-                var tile;
-                var isWall;
+                var x = j * this.tileSize;
                 if ((i == 0 || j == 0 || i == this.tilesY - 1 || j == this.tilesX - 1)
                     || (j % 2 == 0 && i % 2 == 0)) {
-                    tile = new createjs.Bitmap(this.tilesImgs.wall);
-                    isWall = true;
+                    // Wall tiles
+                    var tile = new createjs.Bitmap(this.tilesImgs.wall);
+                    tile.x = x;
+                    tile.y = y;
+                    this.stage.addChild(tile);
+                    this.tiles.push(tile);
                 } else {
-                    tile = new createjs.Bitmap(this.tilesImgs.grass);
-                    isWall = false;
-                }
-                tile.x = j * this.tileSize;
-                tile.y = i * this.tileSize;
-                this.stage.addChild(tile);
+                    // Grass tiles
+                    var tile = new createjs.Bitmap(this.tilesImgs.grass);
+                    tile.x = x;
+                    tile.y = y;
+                    this.stage.addChild(tile);
 
-                // Draw wood tiles
-                if (!isWall && !(i <= 2 && j <= 2)
-                    && !(i >= this.tilesY - 3 && j >= this.tilesX - 3)
-                    && !(i <= 2 && j >= this.tilesX - 3)
-                    && !(i >= this.tilesY - 3 && j <= 2)) {
-                    var wood = new createjs.Bitmap(this.tilesImgs.wood);
-                    wood.x = j * this.tileSize;
-                    wood.y = i * this.tileSize;
-                    this.stage.addChild(wood);
+                    // Wood tiles
+                    if (!(i <= 2 && j <= 2)
+                        && !(i >= this.tilesY - 3 && j >= this.tilesX - 3)
+                        && !(i <= 2 && j >= this.tilesX - 3)
+                        && !(i >= this.tilesY - 3 && j <= 2)) {
+                        var wood = new createjs.Bitmap(this.tilesImgs.wood);
+                        wood.x = x;
+                        wood.y = y;
+                        this.stage.addChild(wood);
+                        this.tiles.push(wood);
+                    }
                 }
             }
         }
@@ -77,6 +88,7 @@ GameEngine = Class.extend({
 
         // Start loop
         createjs.Ticker.addEventListener("tick", function() { gGameEngine.update(); });
+        createjs.Ticker.setFPS(60);
     },
 
     update: function() {

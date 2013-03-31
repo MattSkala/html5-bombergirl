@@ -1,10 +1,23 @@
 Player = Class.extend({
-    velocity: 5,
+    /**
+     * Moving speed in pixels per frame
+     */
+    velocity: 2,
+
+    /**
+     * Bitmap dimensions
+     */
     size: {
         w: 27,
         h: 40
     },
+
+    /**
+     * Bitmap animation
+     */
     bmp: null,
+
+    hit: 13,
 
     init: function(img) {
         var spriteSheet = new createjs.SpriteSheet({
@@ -12,42 +25,80 @@ Player = Class.extend({
             frames: { width: this.size.w, height: this.size.h, regX: 14, regY: 7 },
             animations: {
                 idle: [0, 0, 'idle'],
-                down: [0, 3, 'down', 4],
-                left: [4, 7, 'left', 4],
-                up: [8, 11, 'up', 4],
-                right: [12, 15, 'right', 4]
+                down: [0, 3, 'down', 10],
+                left: [4, 7, 'left', 10],
+                up: [8, 11, 'up', 10],
+                right: [12, 15, 'right', 10]
             }
         });
         this.bmp = new createjs.BitmapAnimation(spriteSheet);
-        this.bmp.gotoAndPlay('idle');
     },
 
     update: function() {
-        var tileSize = gGameEngine.tileSize;
-        var mapHeight = gGameEngine.tilesY * tileSize;
-        var mapWidth = gGameEngine.tilesX * tileSize;
-        if (gInputEngine.actions['up']&& this.bmp.y > tileSize * 1.1) {
+        var position = { x: this.bmp.x, y: this.bmp.y };
+
+        if (gInputEngine.actions['up']
+            && this.bmp.y > gGameEngine.tileSize * 1.1) {
             this.animate('up');
-            this.bmp.y -= this.velocity;
-        } else if (gInputEngine.actions['down'] && this.bmp.y < mapHeight - 2 * tileSize) {
+            position.y -= this.velocity;
+        } else if (gInputEngine.actions['down']
+            && this.bmp.y < gGameEngine.size.h - 2 * gGameEngine.tileSize) {
             this.animate('down');
-            this.bmp.y += this.velocity;
-        } else if (gInputEngine.actions['left'] && this.bmp.x > tileSize + this.size.w / 2) {
+            position.y += this.velocity;
+        } else if (gInputEngine.actions['left']
+            && this.bmp.x > gGameEngine.tileSize + this.size.w / 2) {
             this.animate('left');
-            this.bmp.x -= this.velocity;
-        } else if (gInputEngine.actions['right'] && this.bmp.x < mapWidth - tileSize - this.size.w / 2) {
+            position.x -= this.velocity;
+        } else if (gInputEngine.actions['right']
+            && this.bmp.x < gGameEngine.size.w - gGameEngine.tileSize - this.size.w / 2) {
             this.animate('right');
-            this.bmp.x += this.velocity;
+            position.x += this.velocity;
         } else {
             this.animate('idle');
+        }
+
+        if (position.x != this.bmp.x || position.y != this.bmp.y) {
+            if (this.handleCollision(position)) {
+                this.bmp.x = position.x;
+                this.bmp.y = position.y;
+            }
         }
     },
 
     /**
-     * Changes animation if not already current.
+     * Returns false when collision is detected and we should not move to target position.
+     */
+    handleCollision: function(position) {
+        var pX = position.x + this.size.w/2;
+        var pY = position.y + this.size.h/2;
+
+        // Check possible collision with all wall and wood tiles
+        var tiles = gGameEngine.tiles;
+        for (var i = 0; i < tiles.length; i++) {
+            var tile = tiles[i];
+            // early returns speed it up
+            var tHit = 10;
+            var tX = tile.x + gGameEngine.tileSize * 0.9;
+            var tY = tile.y + gGameEngine.tileSize * 0.5;
+            if (tX - tHit > pX + this.hit) { continue; }
+            if (tX + tHit < pX - this.hit) { continue; }
+            if (tY - tHit > pY + this.hit) { continue; }
+            if (tY + tHit < pY - this.hit) { continue; }
+
+            // now do the circle distance test
+            var dist = Math.sqrt(Math.pow(Math.abs(pX - tX), 2) + Math.pow(Math.abs(pY - tY), 2));
+            if (this.hit + tHit > dist) {
+                return false;
+            }
+        }
+        return true;
+    },
+
+    /**
+     * Changes animation if requested animation is not already current.
      */
     animate: function(animation) {
-        if (this.bmp.currentAnimation.indexOf(animation) === -1) {
+        if (!this.bmp.currentAnimation || this.bmp.currentAnimation.indexOf(animation) === -1) {
             this.bmp.gotoAndPlay(animation);
         }
     }
