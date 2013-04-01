@@ -27,7 +27,6 @@ Bot = Player.extend({
     targetPosition: {},
     targetBitmapPosition: {},
 
-    bombs: [],
     bombsMax: 1,
 
     wait: false,
@@ -36,7 +35,6 @@ Bot = Player.extend({
     init: function(position) {
         this._super(position);
         this.findTargetPosition();
-        this.bombs = [];
     },
 
     update: function() {

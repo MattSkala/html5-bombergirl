@@ -19,6 +19,7 @@ GameEngine = Class.extend({
     fireImg: null,
 
     playing: true,
+    mute: false,
 
     init: function() {
         this.size = {
@@ -57,6 +58,8 @@ GameEngine = Class.extend({
             {id: "bomb", src: "img/bomb.png"},
             {id: "fire", src: "img/fire.png"}
         ]);
+
+        createjs.Sound.registerSound("sound/bomb.mp3", "bomb");
     },
 
     setup: function() {
@@ -98,8 +101,8 @@ GameEngine = Class.extend({
         // Draw player
         this.player = new Player({ x: 1, y: 1 });
 
-        // Subscribe to bomb key
-        gInputEngine.addListener('bomb', this.spawnBomb);
+        // Toggle sound
+        gInputEngine.addListener('mute', this.toggleSound);
 
         // Start loop
         if (!createjs.Ticker.hasEventListener('tick')) {
@@ -146,14 +149,6 @@ GameEngine = Class.extend({
         if (this.botsCount >= 3) {
             var bot3 = new Bot({ x: this.tilesX - 2, y: 1 });
             this.bots.push(bot3);
-        }
-    },
-
-    spawnBomb: function() {
-        if (gGameEngine.bombs.length < gGameEngine.player.bombsMax) {
-            var bomb = new Bomb(gGameEngine.player.position, gGameEngine.player.bombStrength);
-            gGameEngine.stage.addChild(bomb.bmp);
-            gGameEngine.bombs.push(bomb);
         }
     },
 
@@ -269,6 +264,14 @@ GameEngine = Class.extend({
             }
         }
         return array;
+    },
+
+    toggleSound: function() {
+        if (gGameEngine.mute) {
+            gGameEngine.mute = false;
+        } else {
+            gGameEngine.mute = true;
+        }
     }
 });
 

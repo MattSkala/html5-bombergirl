@@ -7,7 +7,7 @@ Player = Entity.extend({
     /**
      * Max number of bombs user can spawn
      */
-    bombsMax: 10,
+    bombsMax: 1,
 
     /**
      * How far the fire reaches when bomb explodes
@@ -34,6 +34,8 @@ Player = Entity.extend({
 
     alive: true,
 
+    bombs: [],
+
     init: function(position) {
         var img = this instanceof Bot ? gGameEngine.playerGirlImg : gGameEngine.playerBoyImg;
         var spriteSheet = new createjs.SpriteSheet({
@@ -56,6 +58,28 @@ Player = Entity.extend({
         this.bmp.y = pixels.y;
 
         gGameEngine.stage.addChild(this.bmp);
+
+        this.bombs = [];
+        this.setBombsListener();
+    },
+
+    setBombsListener: function() {
+        // Subscribe to bombs spawning
+        if (!(this instanceof Bot)) {
+            var that = this;
+            gInputEngine.addListener('bomb', function() {
+                if (that.bombs.length < that.bombsMax) {
+                    var bomb = new Bomb(that.position, that.bombStrength);
+                    gGameEngine.stage.addChild(bomb.bmp);
+                    that.bombs.push(bomb);
+                    gGameEngine.bombs.push(bomb);
+
+                    bomb.setExplodeListener(function() {
+                        gGameEngine.removeFromArray(that.bombs, bomb);
+                    });
+                }
+            });
+        }
     },
 
     update: function() {
@@ -157,30 +181,5 @@ Player = Entity.extend({
         this.alive = false;
 
         gGameEngine.stage.removeChild(this.bmp);
-        /*
-        var posX = this.bmp.x;
-        var posY = this.bmp.y;
-        var spriteSheet = new createjs.SpriteSheet({
-            images: [gGameEngine.playerDeadImg],
-            frames: { width: 36, height: 33, regX: 0, regY: 0 },
-            animations: {
-                die: [0, 6, null, 10],
-                dead: [7]
-            }
-        });
-        this.bmp = new createjs.BitmapAnimation(spriteSheet);
-
-        this.bmp.x = posX;
-        this.bmp.y = posY;
-        gGameEngine.stage.addChild(this.bmp);
-        this.bmp.gotoAndPlay('dead');
-        var bmp = this.bmp;
-        this.bmp.addEventListener('animationend', function() {
-            bmp.stop();
-        });
-
-        // Allow player walking on dead bodies
-        gGameEngine.stage.setChildIndex(gGameEngine.player.bmp, gGameEngine.stage.getNumChildren() - 1);
-        */
     }
 });
