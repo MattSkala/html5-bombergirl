@@ -16,3 +16,21 @@
     margin-top: -3px;
     margin-right: 5px;
 }
+
+h1 {
+    line-height: 64px;
+    margin-bottom: 0;
+}
+
+.html5 {
+    background: url('http://www.w3.org/html/logo/downloads/HTML5_Logo_64.png');
+    width: 64px;
+    height: 64px;
+    display: block;
+    float: left;
+    margin-right: 10px;
+}
+
+.html5 span {
+    display: none;
+}
