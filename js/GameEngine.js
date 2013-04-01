@@ -40,7 +40,6 @@ GameEngine = Class.extend({
         queue.addEventListener("complete", function() {
             that.playerBoyImg = queue.getResult("playerBoy");
             that.playerGirlImg = queue.getResult("playerGirl");
-            that.playerDeadImg = queue.getResult("playerDead");
             that.tilesImgs.grass = queue.getResult("tile_grass");
             that.tilesImgs.wall = queue.getResult("tile_wall");
             that.tilesImgs.wood = queue.getResult("tile_wood");
@@ -51,7 +50,6 @@ GameEngine = Class.extend({
         queue.loadManifest([
             {id: "playerBoy", src: "img/george.png"},
             {id: "playerGirl", src: "img/betty.png"},
-            {id: "playerDead", src: "img/player_dead.png"},
             {id: "tile_grass", src: "img/tile_grass.png"},
             {id: "tile_wall", src: "img/tile_wall.png"},
             {id: "tile_wood", src: "img/tile_wood.png"},
