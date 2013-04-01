@@ -37,7 +37,7 @@ Player = Entity.extend({
     init: function(position) {
         var spriteSheet = new createjs.SpriteSheet({
             images: [gGameEngine.playerImg],
-            frames: { width: this.size.w, height: this.size.h, regX: 0, regY: 0 },
+            frames: { width: this.size.w, height: this.size.h, regX: 0, regY: 5 },
             animations: {
                 idle: [0, 0, 'idle'],
                 down: [0, 3, 'down', 10],
@@ -118,7 +118,7 @@ Player = Entity.extend({
 
             var tile = {};
             tile.left = tilePosition.x * gGameEngine.tileSize + 5;
-            tile.top = tilePosition.y * gGameEngine.tileSize + 5;
+            tile.top = tilePosition.y * gGameEngine.tileSize + 12;
             tile.right = tile.left + gGameEngine.tileSize - 10;
             tile.bottom = tile.top + gGameEngine.tileSize - 20;
 
