@@ -129,26 +129,22 @@ GameEngine = Class.extend({
     spawnBots: function() {
         this.bots = [];
 
-        // Draw bots
         var bot = new Bot({ x: this.tilesX - 2, y: this.tilesY - 2 });
         this.bots.push(bot);
-
+        /*
         var bot2 = new Bot({ x: 1, y: this.tilesY - 2 });
         this.bots.push(bot2);
 
         var bot3 = new Bot({ x: this.tilesX - 2, y: 1 });
         this.bots.push(bot3);
+        */
     },
 
     spawnBomb: function() {
-        if (gGameEngine.playing) {
-            if (gGameEngine.bombs.length < gGameEngine.player.bombsMax) {
-                var bomb = new Bomb(gGameEngine.player.position, gGameEngine.player.bombStrength);
-                gGameEngine.stage.addChild(bomb.bmp);
-                gGameEngine.bombs.push(bomb);
-            }
-        } else {
-            gGameEngine.restart();
+        if (gGameEngine.bombs.length < gGameEngine.player.bombsMax) {
+            var bomb = new Bomb(gGameEngine.player.position, gGameEngine.player.bombStrength);
+            gGameEngine.stage.addChild(bomb.bmp);
+            gGameEngine.bombs.push(bomb);
         }
     },
 
@@ -242,6 +238,15 @@ GameEngine = Class.extend({
         gInputEngine.removeAllListeners();
         gGameEngine.stage.removeAllChildren();
         gGameEngine.setup();
+    },
+
+    removeFromArray: function(array, item) {
+        for (var i = 0; i < array.length; i++) {
+            if (item == array[i]) {
+                array.splice(i, 1);
+            }
+        }
+        return array;
     }
 });
 

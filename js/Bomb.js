@@ -36,6 +36,8 @@ Bomb = Entity.extend({
 
     fires: [],
 
+    explodeListener: null,
+
     init: function(position, strength) {
         this.strength = strength;
 
@@ -69,6 +71,10 @@ Bomb = Entity.extend({
 
     explode: function() {
         this.exploded = true;
+
+        if (this.explodeListener) {
+            this.explodeListener();
+        }
 
         // Fire in all directions!
         this.fire(this.position);
@@ -132,5 +138,9 @@ Bomb = Entity.extend({
 
     remove: function() {
         gGameEngine.stage.removeChild(this.bmp);
+    },
+
+    setExplodeListener: function(listener) {
+        this.explodeListener = listener;
     }
 });
