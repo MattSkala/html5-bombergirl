@@ -175,8 +175,15 @@ Bot = Player.extend({
     die: function() {
         this._super();
         var anyoneAlive = false;
+
+        // Cache bots
+        var bots = [];
         for (var i = 0; i < gGameEngine.bots.length; i++) {
-            var bot = gGameEngine.bots[i];
+            bots.push(gGameEngine.bots[i]);
+        }
+
+        for (var i = 0; i < bots.length; i++) {
+            var bot = bots[i];
             // Remove bot
             if (bot == this) {
                 gGameEngine.bots.splice(i, 1);

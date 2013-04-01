@@ -22,6 +22,7 @@ InputEngine = Class.extend({
         this.bind(40, 'down');
         this.bind(39, 'right');
         this.bind(32, 'bomb');
+        this.bind(13, 'restart');
 
         document.addEventListener('keydown', this.onKeyDown);
         document.addEventListener('keyup', this.onKeyUp);

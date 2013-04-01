@@ -1,7 +1,7 @@
 GameEngine = Class.extend({
     tileSize: 32,
-    tilesX: 9,
-    tilesY: 9,
+    tilesX: 13,
+    tilesY: 11,
     size: {},
     fps: 50,
 
@@ -131,13 +131,12 @@ GameEngine = Class.extend({
 
         var bot = new Bot({ x: this.tilesX - 2, y: this.tilesY - 2 });
         this.bots.push(bot);
-        /*
+
         var bot2 = new Bot({ x: 1, y: this.tilesY - 2 });
         this.bots.push(bot2);
 
         var bot3 = new Bot({ x: this.tilesX - 2, y: 1 });
         this.bots.push(bot3);
-        */
     },
 
     spawnBomb: function() {
@@ -222,18 +221,28 @@ GameEngine = Class.extend({
         btnText.x = this.size.w / 2 - btnText.getMeasuredWidth() / 2;
         btnText.y = this.size.h / 2 - btnText.getMeasuredHeight() / 2 + btnTop;
         this.stage.addChild(btnText);
-
+        this.stage.enableMouseOver();
+        btn.addEventListener('mouseover', function() {
+            btnGraphics.beginFill("#dddddd");
+            btnGraphics.drawRect(rectX, rectY, rectW, rectH);
+        });
+        btn.addEventListener('mouseout', function() {
+            btnGraphics.beginFill("#ffffff");
+            btnGraphics.drawRect(rectX, rectY, rectW, rectH);
+        });
+        btn.addEventListener('mousedown', function() {
+            btnGraphics.beginFill("#aaaaaa");
+            btnGraphics.drawRect(rectX, rectY, rectW, rectH);
+        });
         btn.addEventListener('click', function() {
             gGameEngine.restart();
         });
 
         gInputEngine.removeAllListeners();
 
-        /*
-        gInputEngine.addListener('bomb', function() {
+        gInputEngine.addListener('restart', function() {
             gGameEngine.restart();
         });
-        */
     },
 
     restart: function() {
