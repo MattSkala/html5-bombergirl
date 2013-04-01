@@ -32,6 +32,8 @@ Player = Entity.extend({
      */
     bmp: null,
 
+    alive: true,
+
     init: function(position) {
         var spriteSheet = new createjs.SpriteSheet({
             images: [gGameEngine.playerImg],
@@ -41,7 +43,8 @@ Player = Entity.extend({
                 down: [0, 3, 'down', 10],
                 left: [4, 7, 'left', 10],
                 up: [8, 11, 'up', 10],
-                right: [12, 15, 'right', 10]
+                right: [12, 15, 'right', 10],
+                dead: [15, 20, 'dead', 10]
             }
         });
         this.bmp = new createjs.BitmapAnimation(spriteSheet);
@@ -49,10 +52,13 @@ Player = Entity.extend({
         this.position = position;
         var pixels = gGameEngine.convertToBitmapPosition(position.x, position.y);
         this.bmp.x = pixels.x + this.size.w / 2;
-        this.bmp.y = pixels.y + this.size.h / 2;
+        this.bmp.y = pixels.y;
     },
 
     update: function() {
+        if (!this.alive) {
+            return;
+        }
         var position = { x: this.bmp.x, y: this.bmp.y };
 
         if (gInputEngine.actions['up']
@@ -76,11 +82,16 @@ Player = Entity.extend({
         }
 
         if (position.x != this.bmp.x || position.y != this.bmp.y) {
-            if (this.handleCollision(position)) {
+            if (!this.detectWallCollision(position)) {
                 this.bmp.x = position.x;
                 this.bmp.y = position.y;
                 this.updatePosition();
             }
+        }
+
+        if (this.detectFireCollision()) {
+            // We have to die
+            this.die();
         }
     },
 
@@ -92,9 +103,9 @@ Player = Entity.extend({
     },
 
     /**
-     * Returns false when collision is detected and we should not move to target position.
+     * Returns true when collision is detected and we should not move to target position.
      */
-    handleCollision: function(position) {
+    detectWallCollision: function(position) {
         var player = {};
         player.left = position.x;
         player.top = position.y;
@@ -112,11 +123,25 @@ Player = Entity.extend({
             tile.right = tile.left + gGameEngine.tileSize + 10;
             tile.bottom = tile.top + gGameEngine.tileSize - 5;
 
-            if (gGameEngine.intersectRect(player, tile)) {
-                return false;
+            if(gGameEngine.intersectRect(player, tile)) {
+                return true;
             }
         }
-        return true;
+        return false;
+    },
+
+    detectFireCollision: function() {
+        var bombs = gGameEngine.bombs;
+        for (var i = 0; i < bombs.length; i++) {
+            var bomb = bombs[i];
+            for (var j = 0; j < bomb.fires.length; j++) {
+                var fire = bomb.fires[j];
+                if (fire.position.x == this.position.x && fire.position.y == this.position.y) {
+                    return true;
+                }
+            }
+        }
+        return false;
     },
 
     /**
@@ -126,5 +151,34 @@ Player = Entity.extend({
         if (!this.bmp.currentAnimation || this.bmp.currentAnimation.indexOf(animation) === -1) {
             this.bmp.gotoAndPlay(animation);
         }
+    },
+
+    die: function() {
+        this.alive = false;
+
+        gGameEngine.stage.removeChild(this.bmp);
+        var posX = this.bmp.x;
+        var posY = this.bmp.y;
+        var spriteSheet = new createjs.SpriteSheet({
+            images: [gGameEngine.playerDeadImg],
+            frames: { width: 36, height: 33, regX: 14, regY: 7 },
+            animations: {
+                die: [0, 6, null, 10],
+                dead: [7]
+            }
+        });
+        this.bmp = new createjs.BitmapAnimation(spriteSheet);
+
+        this.bmp.x = posX;
+        this.bmp.y = posY;
+        gGameEngine.stage.addChild(this.bmp);
+        this.bmp.gotoAndPlay('dead');
+        var bmp = this.bmp;
+        this.bmp.addEventListener('animationend', function() {
+            bmp.stop();
+        });
+
+        console.log('Game over!');
+        gGameEngine.gameOver();
     }
 });

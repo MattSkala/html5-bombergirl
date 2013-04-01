@@ -33,6 +33,7 @@ GameEngine = Class.extend({
         var that = this;
         queue.addEventListener("complete", function() {
             that.playerImg = queue.getResult("player");
+            that.playerDeadImg = queue.getResult("playerDead");
             that.tilesImgs.grass = queue.getResult("tile_grass");
             that.tilesImgs.wall = queue.getResult("tile_wall");
             that.tilesImgs.wood = queue.getResult("tile_wood");
@@ -42,6 +43,7 @@ GameEngine = Class.extend({
         });
         queue.loadManifest([
             {id: "player", src: "img/player.png"},
+            {id: "playerDead", src: "img/player_dead.png"},
             {id: "tile_grass", src: "img/tile_grass.png"},
             {id: "tile_wall", src: "img/tile_wall.png"},
             {id: "tile_wood", src: "img/tile_wood.png"},
@@ -51,7 +53,9 @@ GameEngine = Class.extend({
     },
 
     setup: function() {
-        gInputEngine.setup();
+        if (!gInputEngine.bindings.length) {
+            gInputEngine.setup();
+        }
 
         // Draw tiles
         for (var i = 0; i < this.tilesY; i++) {
@@ -155,6 +159,40 @@ GameEngine = Class.extend({
     getTileMaterial: function(position) {
         var tile = this.getTile(position);
         return (tile) ? tile.material : 'grass' ;
+    },
+
+    gameOver: function() {
+        // Game over text
+        var text = new createjs.Text("Game Over :(", "35px Helvetica", "#ffffff");
+        text.x = this.size.w / 2 - text.getMeasuredWidth() / 2;
+        text.y = this.size.h / 2 - text.getMeasuredHeight() / 2;
+        text.shadow = new createjs.Shadow("#000000", 5, 5, 10);
+        text.textBaseline = "alphabetic";
+        this.stage.addChild(text);
+
+        // Try again button
+        var btnTop = 50;
+        var rectW = 130;
+        var rectH = 35;
+        var rectX = this.size.w / 2 - rectW / 2;
+        var rectY = this.size.h / 2 - rectH / 2 + btnTop;
+        var btnGraphics = new createjs.Graphics().beginFill("#ffffff").drawRect(rectX, rectY, rectW, rectH);
+        var btn = new createjs.Shape(btnGraphics);
+        this.stage.addChild(btn);
+
+        var btnText = new createjs.Text("Play again", "16px Helvetica", "#000000");
+        btnText.x = this.size.w / 2 - btnText.getMeasuredWidth() / 2;
+        btnText.y = this.size.h / 2 - btnText.getMeasuredHeight() / 2 + btnTop;
+        this.stage.addChild(btnText);
+
+        btn.addEventListener('click', function() {
+            gGameEngine.restart();
+        });
+    },
+
+    restart: function() {
+        this.stage.removeAllChildren();
+        this.setup();
     }
 });
 
