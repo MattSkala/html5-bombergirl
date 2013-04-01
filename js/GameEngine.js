@@ -1,9 +1,10 @@
 GameEngine = Class.extend({
     tileSize: 32,
-    tilesX: 13,
+    tilesX: 15,
     tilesY: 11,
     size: {},
     fps: 50,
+    botsCount: 3, /* 0 - 3 */
 
     stage: null,
     player: null,
@@ -129,14 +130,20 @@ GameEngine = Class.extend({
     spawnBots: function() {
         this.bots = [];
 
-        var bot = new Bot({ x: this.tilesX - 2, y: this.tilesY - 2 });
-        this.bots.push(bot);
+        if (this.botsCount >= 1) {
+            var bot = new Bot({ x: this.tilesX - 2, y: this.tilesY - 2 });
+            this.bots.push(bot);
+        }
 
-        var bot2 = new Bot({ x: 1, y: this.tilesY - 2 });
-        this.bots.push(bot2);
+        if (this.botsCount >= 2) {
+            var bot2 = new Bot({ x: 1, y: this.tilesY - 2 });
+            this.bots.push(bot2);
+        }
 
-        var bot3 = new Bot({ x: this.tilesX - 2, y: 1 });
-        this.bots.push(bot3);
+        if (this.botsCount >= 3) {
+            var bot3 = new Bot({ x: this.tilesX - 2, y: 1 });
+            this.bots.push(bot3);
+        }
     },
 
     spawnBomb: function() {
@@ -215,6 +222,7 @@ GameEngine = Class.extend({
         var rectY = this.size.h / 2 - rectH / 2 + btnTop;
         var btnGraphics = new createjs.Graphics().beginFill("#ffffff").drawRect(rectX, rectY, rectW, rectH);
         var btn = new createjs.Shape(btnGraphics);
+        btn.shadow = new createjs.Shadow("#000000", 5, 5, 10);
         this.stage.addChild(btn);
 
         var btnText = new createjs.Text("Play again", "16px Helvetica", "#000000");

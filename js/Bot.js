@@ -45,6 +45,7 @@ Bot = Player.extend({
         }
 
         if (this.targetBitmapPosition.x == this.bmp.x && this.targetBitmapPosition.y == this.bmp.y) {
+
             // If we bumped into the wood, burn it!
             var wood = this.getNearWood();
             if (wood) {
@@ -79,27 +80,20 @@ Bot = Player.extend({
         target.x += this.dirX;
         target.y += this.dirY;
 
-        // Change direction when we can not go straight anymore
-        if (gGameEngine.getTileMaterial(target) != 'grass') {
-            var targets = this.getPossibleTargets();
-            // Do not go the same way if possible
-            if (targets.length > 1) {
-                var previousPosition = this.getPreviousPosition();
-                for (var i = 0; i < targets.length; i++) {
-                    var item = targets[i];
-                    if (item.x == previousPosition.x && item.y == previousPosition.y) {
-                        targets.splice(i, 1);
-                    }
+        var targets = this.getPossibleTargets();
+        // Do not go the same way if possible
+        if (targets.length > 1) {
+            var previousPosition = this.getPreviousPosition();
+            for (var i = 0; i < targets.length; i++) {
+                var item = targets[i];
+                if (item.x == previousPosition.x && item.y == previousPosition.y) {
+                    targets.splice(i, 1);
                 }
             }
-            this.targetPosition = this.getRandomTarget(targets);
-            this.loadTargetPosition(this.targetPosition);
-            this.targetBitmapPosition = gGameEngine.convertToBitmapPosition(this.targetPosition.x, this.targetPosition.y);
-        } else {
-            this.excludeDirections = [];
-            this.targetPosition = target;
-            this.targetBitmapPosition = gGameEngine.convertToBitmapPosition(target.x, target.y);
         }
+        this.targetPosition = this.getRandomTarget(targets);
+        this.loadTargetPosition(this.targetPosition);
+        this.targetBitmapPosition = gGameEngine.convertToBitmapPosition(this.targetPosition.x, this.targetPosition.y);
     },
 
     /**
