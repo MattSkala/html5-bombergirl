@@ -1,5 +1,3 @@
-define(['./Entity.js', './Tile.js', './Player.js', './Fire.js', './Bomb.js']);
-
 GameEngine = Class.extend({
     tileSize: 32,
     tilesX: 19,
