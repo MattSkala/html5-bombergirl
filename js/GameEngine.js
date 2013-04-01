@@ -60,6 +60,8 @@ GameEngine = Class.extend({
             gInputEngine.setup();
         }
 
+        this.bombs = [];
+        this.tiles = [];
         // Draw tiles
         for (var i = 0; i < this.tilesY; i++) {
             for (var j = 0; j < this.tilesX; j++) {
@@ -96,8 +98,10 @@ GameEngine = Class.extend({
         gInputEngine.addListener('bomb', this.spawnBomb);
 
         // Start loop
-        createjs.Ticker.addEventListener("tick", gGameEngine.update);
-        createjs.Ticker.setFPS(this.fps);
+        if (!createjs.Ticker.hasEventListener('tick')) {
+            createjs.Ticker.addEventListener('tick', gGameEngine.update);
+            createjs.Ticker.setFPS(this.fps);
+        }
 
         this.playing = true;
     },
@@ -123,6 +127,8 @@ GameEngine = Class.extend({
     },
 
     spawnBots: function() {
+        this.bots = [];
+
         // Draw bots
         var bot = new Bot({ x: this.tilesX - 2, y: this.tilesY - 2 });
         this.bots.push(bot);
@@ -194,6 +200,9 @@ GameEngine = Class.extend({
     },
 
     gameOver: function(status) {
+        if (!gGameEngine.playing) { return; }
+        gGameEngine.playing = false;
+
         // Game over text
         var message = (status == 'win') ? "You Win! ;D" : "Game Over :(";
         var text = new createjs.Text(message, "35px Helvetica", "#ffffff");
@@ -222,7 +231,6 @@ GameEngine = Class.extend({
             gGameEngine.restart();
         });
 
-        gGameEngine.playing = false;
         gInputEngine.removeAllListeners();
 
         gInputEngine.addListener('bomb', function() {
@@ -232,8 +240,8 @@ GameEngine = Class.extend({
 
     restart: function() {
         gInputEngine.removeAllListeners();
-        this.stage.removeAllChildren();
-        this.setup();
+        gGameEngine.stage.removeAllChildren();
+        gGameEngine.setup();
     }
 });
 

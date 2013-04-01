@@ -54,6 +54,8 @@ Bomb = Entity.extend({
         var pixels = gGameEngine.convertToBitmapPosition(position.x, position.y);
         this.bmp.x = pixels.x + this.size.w / 4;
         this.bmp.y = pixels.y + this.size.h / 4;
+
+        this.fires = [];
     },
 
     update: function() {

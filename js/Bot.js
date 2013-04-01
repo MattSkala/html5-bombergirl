@@ -25,17 +25,17 @@ Bot = Player.extend({
     targetPosition: {},
     targetBitmapPosition: {},
 
+    init: function(position) {
+        this._super(position);
+        this.findTargetPosition();
+    },
+
     update: function() {
          if (!this.alive) {
             return;
         }
 
-        if (!this.targetPosition.x) {
-            this.findTargetPosition();
-        }
-
-        if (Math.abs(this.targetBitmapPosition.x - this.bmp.x) == 0
-            && Math.abs(this.targetBitmapPosition.y - this.bmp.y) == 0) {
+        if (this.targetBitmapPosition.x == this.bmp.x && this.targetBitmapPosition.y == this.bmp.y) {
             this.findTargetPosition();
         } else {
             this.moveToTargetPosition();
@@ -77,26 +77,6 @@ Bot = Player.extend({
         this.bmp.y += this.dirY * this.velocity;
 
         this.updatePosition();
-    },
-
-    move: function() {
-        this.animate(this.direction);
-
-        var position = { x: this.bmp.x, y: this.bmp.y };
-        position.x += this.velocity * this.dirX;
-        position.y += this.velocity * this.dirY;
-
-        if (this.detectWallCollision(position)) {
-            this.rejectDirections.push(this.direction);
-            // Change direction
-            this.changeDirection();
-        } else {
-            // Update position
-            this.excludeDirections = [];
-            this.bmp.x = position.x;
-            this.bmp.y = position.y;
-            this.updatePosition();
-        }
     },
 
     changeDirection: function() {
