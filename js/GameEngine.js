@@ -1,12 +1,13 @@
 GameEngine = Class.extend({
     tileSize: 32,
-    tilesX: 15,
-    tilesY: 11,
+    tilesX: 9,
+    tilesY: 9,
     size: {},
     fps: 50,
 
     stage: null,
     player: null,
+    bots: [],
     tiles: [],
     bombs: [],
 
@@ -84,9 +85,10 @@ GameEngine = Class.extend({
             }
         }
 
+        this.spawnBots();
+
         // Draw player
         this.player = new Player({ x: 1, y: 1 });
-        this.stage.addChild(this.player.bmp);
 
         // Subscribe to bomb key
         gInputEngine.addListener('bomb', this.spawnBomb);
@@ -97,13 +99,35 @@ GameEngine = Class.extend({
     },
 
     update: function() {
+        // Player
         gGameEngine.player.update();
+
+        // Bots
+        for (var i = 0; i < gGameEngine.bots.length; i++) {
+            var bot = gGameEngine.bots[i];
+            bot.update();
+        }
+
+        // Bombs
         for (var i = 0; i < gGameEngine.bombs.length; i++) {
             var bomb = gGameEngine.bombs[i];
             bomb.update();
         }
 
+        // Stage
         gGameEngine.stage.update();
+    },
+
+    spawnBots: function() {
+        // Draw bots
+        var bot = new Bot({ x: this.tilesX - 2, y: this.tilesY - 2 });
+        this.bots.push(bot);
+
+        var bot2 = new Bot({ x: 1, y: this.tilesY - 2 });
+        this.bots.push(bot2);
+
+        var bot3 = new Bot({ x: this.tilesX - 2, y: 1 });
+        this.bots.push(bot3);
     },
 
     spawnBomb: function() {
@@ -161,16 +185,17 @@ GameEngine = Class.extend({
         return (tile) ? tile.material : 'grass' ;
     },
 
-    gameOver: function() {
+    gameOver: function(status) {
         // Game over text
-        var text = new createjs.Text("Game Over :(", "35px Helvetica", "#ffffff");
+        var message = (status == 'win') ? "You Win! ;D" : "Game Over :(";
+        var text = new createjs.Text(message, "35px Helvetica", "#ffffff");
         text.x = this.size.w / 2 - text.getMeasuredWidth() / 2;
         text.y = this.size.h / 2 - text.getMeasuredHeight() / 2;
         text.shadow = new createjs.Shadow("#000000", 5, 5, 10);
         text.textBaseline = "alphabetic";
         this.stage.addChild(text);
 
-        // Try again button
+        // Play again button
         var btnTop = 50;
         var rectW = 130;
         var rectH = 35;
@@ -188,6 +213,8 @@ GameEngine = Class.extend({
         btn.addEventListener('click', function() {
             gGameEngine.restart();
         });
+
+        this.player.alive = false;
     },
 
     restart: function() {

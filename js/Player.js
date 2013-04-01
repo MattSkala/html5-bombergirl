@@ -53,6 +53,8 @@ Player = Entity.extend({
         var pixels = gGameEngine.convertToBitmapPosition(position.x, position.y);
         this.bmp.x = pixels.x + this.size.w / 2;
         this.bmp.y = pixels.y;
+
+        gGameEngine.stage.addChild(this.bmp);
     },
 
     update: function() {
@@ -92,6 +94,7 @@ Player = Entity.extend({
         if (this.detectFireCollision()) {
             // We have to die
             this.die();
+            gGameEngine.gameOver('lose');
         }
     },
 
@@ -178,7 +181,7 @@ Player = Entity.extend({
             bmp.stop();
         });
 
-        console.log('Game over!');
-        gGameEngine.gameOver();
+        // Allow player walking on dead bodies
+        gGameEngine.stage.setChildIndex(gGameEngine.player.bmp, gGameEngine.stage.getNumChildren() - 1);
     }
 });
