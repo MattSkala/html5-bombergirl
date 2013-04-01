@@ -72,10 +72,6 @@ Bomb = Entity.extend({
     explode: function() {
         this.exploded = true;
 
-        if (this.explodeListener) {
-            this.explodeListener();
-        }
-
         // Fire in all directions!
         this.fire(this.position);
         for (var i = 0; i < 4; i++) {

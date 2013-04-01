@@ -52,6 +52,11 @@ Fire = Entity.extend({
     },
 
     remove: function() {
+        if (this.bomb.explodeListener) {
+            this.bomb.explodeListener();
+            this.bomb.explodeListener = null;
+        }
+
         gGameEngine.stage.removeChild(this.bmp);
 
         for (var i = 0; i < this.bomb.fires.length; i++) {

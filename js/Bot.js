@@ -31,6 +31,7 @@ Bot = Player.extend({
     bombsMax: 1,
 
     wait: false,
+    steps: 0,
 
     init: function(position) {
         this._super(position);
@@ -49,6 +50,15 @@ Bot = Player.extend({
             if (wood) {
                 this.plantBomb();
             }
+
+            // When in safety, wait until explosion
+            if (this.bombs.length) {
+                this.steps++;
+                if (this.steps > 2) {
+                    this.wait = true;
+                }
+            }
+
             this.findTargetPosition();
             this.moveToTargetPosition();
         } else {
@@ -147,10 +157,8 @@ Bot = Player.extend({
      */
     getPreviousPosition: function() {
         var previous = { x: this.targetPosition.x, y: this.targetPosition.y };
-        //console.log(previous);
         previous.x -= this.dirX;
         previous.y -= this.dirY;
-        console.log(previous);
         return previous;
     },
 
@@ -210,14 +218,12 @@ Bot = Player.extend({
             gGameEngine.stage.addChild(bomb.bmp);
             this.bombs.push(bomb);
             gGameEngine.bombs.push(bomb);
+
             var that = this;
-
-            // Change direction
-            //this.changeDirection();
-
             bomb.setExplodeListener(function() {
                 gGameEngine.removeFromArray(that.bombs, bomb);
                 that.wait = false;
+                that.steps = false;
             });
         }
     }

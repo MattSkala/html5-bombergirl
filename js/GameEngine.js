@@ -229,9 +229,11 @@ GameEngine = Class.extend({
 
         gInputEngine.removeAllListeners();
 
+        /*
         gInputEngine.addListener('bomb', function() {
             gGameEngine.restart();
         });
+        */
     },
 
     restart: function() {
