@@ -64,6 +64,10 @@ InputEngine = Class.extend({
     addListener: function(action, listener) {
         this.listeners[action] = this.listeners[action] || new Array();
         this.listeners[action].push(listener);
+    },
+
+    removeAllListeners: function() {
+        this.listeners = [];
     }
 });
 

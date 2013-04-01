@@ -37,7 +37,7 @@ Player = Entity.extend({
     init: function(position) {
         var spriteSheet = new createjs.SpriteSheet({
             images: [gGameEngine.playerImg],
-            frames: { width: this.size.w, height: this.size.h, regX: 14, regY: 7 },
+            frames: { width: this.size.w, height: this.size.h, regX: 0, regY: 0 },
             animations: {
                 idle: [0, 0, 'idle'],
                 down: [0, 3, 'down', 10],
@@ -51,32 +51,28 @@ Player = Entity.extend({
 
         this.position = position;
         var pixels = gGameEngine.convertToBitmapPosition(position.x, position.y);
-        this.bmp.x = pixels.x + this.size.w / 2;
+        this.bmp.x = pixels.x;
         this.bmp.y = pixels.y;
 
         gGameEngine.stage.addChild(this.bmp);
     },
 
     update: function() {
-        if (!this.alive) {
+        if (!gGameEngine.playing || !this.alive) {
             return;
         }
         var position = { x: this.bmp.x, y: this.bmp.y };
 
-        if (gInputEngine.actions['up']
-            && this.bmp.y > gGameEngine.tileSize * 1.1) {
+        if (gInputEngine.actions['up']) {
             this.animate('up');
             position.y -= this.velocity;
-        } else if (gInputEngine.actions['down']
-            && this.bmp.y < gGameEngine.size.h - 2 * gGameEngine.tileSize) {
+        } else if (gInputEngine.actions['down']) {
             this.animate('down');
             position.y += this.velocity;
-        } else if (gInputEngine.actions['left']
-            && this.bmp.x > gGameEngine.tileSize + this.size.w / 2) {
+        } else if (gInputEngine.actions['left']) {
             this.animate('left');
             position.x -= this.velocity;
-        } else if (gInputEngine.actions['right']
-            && this.bmp.x < gGameEngine.size.w - gGameEngine.tileSize - this.size.w / 2) {
+        } else if (gInputEngine.actions['right']) {
             this.animate('right');
             position.x += this.velocity;
         } else {
@@ -112,8 +108,8 @@ Player = Entity.extend({
         var player = {};
         player.left = position.x;
         player.top = position.y;
-        player.right = player.left + this.size.w * 0.40;
-        player.bottom = player.top + this.size.h * 0.7;
+        player.right = player.left + this.size.w;
+        player.bottom = player.top + this.size.h;
 
         // Check possible collision with all wall and wood tiles
         var tiles = gGameEngine.tiles;
@@ -121,10 +117,10 @@ Player = Entity.extend({
             var tilePosition = tiles[i].position;
 
             var tile = {};
-            tile.left = tilePosition.x * gGameEngine.tileSize;
-            tile.top = tilePosition.y * gGameEngine.tileSize;
-            tile.right = tile.left + gGameEngine.tileSize + 10;
-            tile.bottom = tile.top + gGameEngine.tileSize - 5;
+            tile.left = tilePosition.x * gGameEngine.tileSize + 5;
+            tile.top = tilePosition.y * gGameEngine.tileSize + 5;
+            tile.right = tile.left + gGameEngine.tileSize - 10;
+            tile.bottom = tile.top + gGameEngine.tileSize - 20;
 
             if(gGameEngine.intersectRect(player, tile)) {
                 return true;
@@ -164,7 +160,7 @@ Player = Entity.extend({
         var posY = this.bmp.y;
         var spriteSheet = new createjs.SpriteSheet({
             images: [gGameEngine.playerDeadImg],
-            frames: { width: 36, height: 33, regX: 14, regY: 7 },
+            frames: { width: 36, height: 33, regX: 0, regY: 0 },
             animations: {
                 die: [0, 6, null, 10],
                 dead: [7]

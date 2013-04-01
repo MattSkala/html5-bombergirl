@@ -16,6 +16,8 @@ GameEngine = Class.extend({
     bombImg: null,
     fireImg: null,
 
+    playing: true,
+
     init: function() {
         this.size = {
             w: this.tileSize * this.tilesX,
@@ -96,6 +98,8 @@ GameEngine = Class.extend({
         // Start loop
         createjs.Ticker.addEventListener("tick", gGameEngine.update);
         createjs.Ticker.setFPS(this.fps);
+
+        this.playing = true;
     },
 
     update: function() {
@@ -131,10 +135,14 @@ GameEngine = Class.extend({
     },
 
     spawnBomb: function() {
-        if (gGameEngine.bombs.length < gGameEngine.player.bombsMax) {
-            var bomb = new Bomb(gGameEngine.player.position, gGameEngine.player.bombStrength);
-            gGameEngine.stage.addChild(bomb.bmp);
-            gGameEngine.bombs.push(bomb);
+        if (gGameEngine.playing) {
+            if (gGameEngine.bombs.length < gGameEngine.player.bombsMax) {
+                var bomb = new Bomb(gGameEngine.player.position, gGameEngine.player.bombStrength);
+                gGameEngine.stage.addChild(bomb.bmp);
+                gGameEngine.bombs.push(bomb);
+            }
+        } else {
+            gGameEngine.restart();
         }
     },
 
@@ -143,7 +151,7 @@ GameEngine = Class.extend({
      */
     convertToEntityPosition: function(x, y) {
         var position = {};
-        position.x = Math.floor(x / gGameEngine.tileSize);
+        position.x = Math.round(x / gGameEngine.tileSize);
         position.y = Math.round(y /gGameEngine.tileSize);
         return position;
     },
@@ -214,10 +222,16 @@ GameEngine = Class.extend({
             gGameEngine.restart();
         });
 
-        this.player.alive = false;
+        gGameEngine.playing = false;
+        gInputEngine.removeAllListeners();
+
+        gInputEngine.addListener('bomb', function() {
+            gGameEngine.restart();
+        });
     },
 
     restart: function() {
+        gInputEngine.removeAllListeners();
         this.stage.removeAllChildren();
         this.setup();
     }

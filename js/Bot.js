@@ -7,7 +7,7 @@ Bot = Player.extend({
     /**
      * Directions that are not allowed to go because of collision
      */
-    rejectDirections: [],
+    excludeDirections: [],
 
     /**
      * Current X axis direction
@@ -19,18 +19,64 @@ Bot = Player.extend({
      */
     dirY: -1,
 
+    /**
+     * Target position on map we are heading to
+     */
+    targetPosition: {},
+    targetBitmapPosition: {},
+
     update: function() {
          if (!this.alive) {
             return;
         }
-        var position = { x: this.bmp.x, y: this.bmp.y };
 
-        this.move();
+        if (!this.targetPosition.x) {
+            this.findTargetPosition();
+        }
+
+        if (Math.abs(this.targetBitmapPosition.x - this.bmp.x) == 0
+            && Math.abs(this.targetBitmapPosition.y - this.bmp.y) == 0) {
+            this.findTargetPosition();
+        } else {
+            this.moveToTargetPosition();
+        }
 
         if (this.detectFireCollision()) {
-            // We have to die
+            // Bot has to die
             this.die();
         }
+    },
+
+    /**
+     * Finds the next tile position where we should move.
+     */
+    findTargetPosition: function() {
+        var target = { x: this.position.x, y: this.position.y };
+        target.x += this.dirX;
+        target.y += this.dirY;
+
+        // Change direction when there would be collision
+        if (gGameEngine.getTileMaterial(target) != 'grass') {
+            this.excludeDirections.push(this.action);
+            this.changeDirection();
+            this.findTargetPosition();
+        } else {
+            this.excludeDirections = [];
+            this.targetPosition = target;
+            this.targetBitmapPosition = gGameEngine.convertToBitmapPosition(target.x, target.y);
+        }
+    },
+
+    /**
+     * Moves a step forward to target position.
+     */
+    moveToTargetPosition: function() {
+        this.animate(this.direction);
+
+        this.bmp.x += this.dirX * this.velocity;
+        this.bmp.y += this.dirY * this.velocity;
+
+        this.updatePosition();
     },
 
     move: function() {
@@ -46,7 +92,7 @@ Bot = Player.extend({
             this.changeDirection();
         } else {
             // Update position
-            this.rejectDirections = [];
+            this.excludeDirections = [];
             this.bmp.x = position.x;
             this.bmp.y = position.y;
             this.updatePosition();
@@ -58,19 +104,19 @@ Bot = Player.extend({
         var max = 4;
         var rand = Math.floor(Math.random() * (max - min + 1)) + min;
 
-        if (rand == 1 && this.rejectDirections.indexOf('up') === -1) {
+        if (rand == 1 && this.excludeDirections.indexOf('up') === -1) {
             this.dirY = -1;
             this.dirX = 0;
             this.direction = 'up';
-        } else if (rand == 2 && this.rejectDirections.indexOf('right') === -1) {
+        } else if (rand == 2 && this.excludeDirections.indexOf('right') === -1) {
             this.dirY = 0;
             this.dirX = 1;
             this.direction = 'right';
-        } else if (rand == 3 && this.rejectDirections.indexOf('bottom') === -1) {
+        } else if (rand == 3 && this.excludeDirections.indexOf('down') === -1) {
             this.dirY = 1;
             this.dirX = 0;
-            this.direction = 'bottom';
-        } else if (rand == 4 && this.rejectDirections.indexOf('left') === -1) {
+            this.direction = 'down';
+        } else if (rand == 4 && this.excludeDirections.indexOf('left') === -1) {
             this.dirY = 0;
             this.dirX = -1;
             this.direction = 'left';
