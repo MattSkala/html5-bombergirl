@@ -104,7 +104,7 @@ GameEngine = Class.extend({
 
     spawnBomb: function() {
         if (gGameEngine.bombs.length < gGameEngine.player.bombsMax) {
-            var bomb = new Bomb(gGameEngine.player.position);
+            var bomb = new Bomb(gGameEngine.player.position, gGameEngine.player.bombStrength);
             gGameEngine.stage.addChild(bomb.bmp);
             gGameEngine.bombs.push(bomb);
         }
@@ -120,6 +120,9 @@ GameEngine = Class.extend({
         return position;
     },
 
+    /**
+     * Convert entity on grid position to bitmap pixels position
+     */
     convertToBitmapPosition: function(x, y) {
         var position = {};
         position.x = x * gGameEngine.tileSize;
@@ -132,6 +135,26 @@ GameEngine = Class.extend({
      */
     intersectRect: function(a, b) {
         return (a.left <= b.right && b.left <= a.right && a.top <= b.bottom && b.top <= a.bottom);
+    },
+
+    /**
+     * Returns tile at given position.
+     */
+    getTile: function(position) {
+        for (var i = 0; i < this.tiles.length; i++) {
+            var tile = this.tiles[i];
+            if (tile.position.x == position.x && tile.position.y == position.y) {
+                return tile;
+            }
+        }
+    },
+
+    /**
+     * Returns tile material at given position.
+     */
+    getTileMaterial: function(position) {
+        var tile = this.getTile(position);
+        return (tile) ? tile.material : 'grass' ;
     }
 });
 

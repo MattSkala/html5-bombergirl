@@ -5,6 +5,16 @@ Player = Entity.extend({
     velocity: 2,
 
     /**
+     * Max number of bombs user can spawn
+     */
+    bombsMax: 10,
+
+    /**
+     * How far the fire reaches when bomb explodes
+     */
+    bombStrength: 1,
+
+    /**
      * Entity position on map grid
      */
     position: {},
@@ -21,11 +31,6 @@ Player = Entity.extend({
      * Bitmap animation
      */
     bmp: null,
-
-    /**
-     * Max number of bombs user can spawn
-     */
-    bombsMax: 10,
 
     init: function(position) {
         var spriteSheet = new createjs.SpriteSheet({
