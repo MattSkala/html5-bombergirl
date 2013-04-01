@@ -1,0 +1,18 @@
+ .container {
+    width: 608px;
+}
+
+#game {
+    margin: auto;
+    text-align: center;
+}
+
+.footer .alert {
+    text-align: center;
+    line-height: 35px;
+}
+
+.footer .alert img {
+    margin-top: -3px;
+    margin-right: 5px;
+}

@@ -12,8 +12,34 @@
     <script type="text/javascript" src="js/Bomb.js"></script>
     <script type="text/javascript" src="js/InputEngine.js"></script>
     <script type="text/javascript" src="js/GameEngine.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="components/bootstrap/docs/assets/css/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
 </head>
 <body onload="gGameEngine.load()">
-    <canvas id="canvas" width="800" height="480"></canvas>
+    <div class="container">
+        <div class="page-header">
+            <h1>HTML5 Bomberman</h1>
+        </div>
+        <div id="game">
+            <canvas id="canvas" width="608" height="416"></canvas>
+        </div>
+        <h3>How to play</h3>
+        <ul>
+            <li><strong>arrow keys</strong> &hellip; move</li>
+            <li><strong>spacebar</strong> &hellip; plant the bomb</li>
+        </ul>
+
+        <hr>
+
+        <div class="footer">
+            <div class="alert alert-success">
+                <img src="http://raw.github.com/github/media/master/octocats/blacktocat-32.png" width="25">
+                This game has nothing to hide. <a href="#">Download the source code on GitHub.</a>
+            </div>
+            <p class="pull-left">&copy; 2013 Created by <a href="http://matousskala.cz">Matt Skala</a></p>
+            <p class="pull-right">Powered by <a href="http://www.createjs.com/#!/CreateJS">EaselJS</a></p>
+        </div>
+    </div>
 </body>
 </html>
