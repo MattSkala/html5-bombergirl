@@ -31,7 +31,9 @@ InputEngine = Class.extend({
         var action = gInputEngine.bindings[event.keyCode];
         if (action) {
             gInputEngine.actions[action] = true;
+            event.preventDefault();
         }
+        return false;
     },
 
     onKeyUp: function(event) {
@@ -46,7 +48,9 @@ InputEngine = Class.extend({
                     listener();
                 }
             }
+            event.preventDefault();
         }
+        return false;
     },
 
     /**
