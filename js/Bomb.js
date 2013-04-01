@@ -25,7 +25,7 @@ Bomb = Entity.extend({
     /**
      * Max timer value in seconds
      */
-    timerMax: 3,
+    timerMax: 1,
 
     exploded: false,
 
@@ -59,8 +59,14 @@ Bomb = Entity.extend({
     explode: function() {
         this.exploded = true;
 
+        // Cache tiles
+        var tiles = [];
+        for (var i = 0; i < gGameEngine.tiles.length; i++) {
+            var tile = gGameEngine.tiles[i];
+            tiles.push(tile);
+        }
+
         // Burn all wood around!
-        var tiles = gGameEngine.tiles;
         for (var i = 0; i < tiles.length; i++) {
             var tile = tiles[i];
             if (tile.material == 'wood'
