@@ -1,5 +1,5 @@
  .container {
-    width: 580px;
+    width: 545px;
 }
 
 #game {
@@ -33,4 +33,8 @@ h1 {
 
 .html5 span {
     display: none;
+}
+
+h1 strong {
+    color: #99CC00;
 }

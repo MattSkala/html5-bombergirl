@@ -13,8 +13,8 @@ Bomb = Entity.extend({
      * Bitmap dimensions
      */
     size: {
-        w: 19,
-        h: 19
+        w: 28,
+        h: 28
     },
 
     /**
@@ -43,9 +43,9 @@ Bomb = Entity.extend({
 
         var spriteSheet = new createjs.SpriteSheet({
             images: [gGameEngine.bombImg],
-            frames: { width: this.size.w, height: this.size.h, regX: 0, regY: 0 },
+            frames: { width: this.size.w, height: this.size.h, regX: 5, regY: 5 },
             animations: {
-                idle: [0, 2, 'idle'],
+                idle: [0, 4, null, 10],
             }
         });
         this.bmp = new createjs.BitmapAnimation(spriteSheet);

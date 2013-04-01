@@ -23,8 +23,8 @@ Player = Entity.extend({
      * Bitmap dimensions
      */
     size: {
-        w: 27,
-        h: 40
+        w: 48,
+        h: 48
     },
 
     /**
@@ -35,16 +35,17 @@ Player = Entity.extend({
     alive: true,
 
     init: function(position) {
+        var img = this instanceof Bot ? gGameEngine.playerGirlImg : gGameEngine.playerBoyImg;
         var spriteSheet = new createjs.SpriteSheet({
-            images: [gGameEngine.playerImg],
-            frames: { width: this.size.w, height: this.size.h, regX: 0, regY: 5 },
+            images: [img],
+            frames: { width: this.size.w, height: this.size.h, regX: 12, regY: 12 },
             animations: {
                 idle: [0, 0, 'idle'],
                 down: [0, 3, 'down', 10],
                 left: [4, 7, 'left', 10],
                 up: [8, 11, 'up', 10],
                 right: [12, 15, 'right', 10],
-                dead: [15, 20, 'dead', 10]
+                dead: [0, 0, 'dead', 10]
             }
         });
         this.bmp = new createjs.BitmapAnimation(spriteSheet);
@@ -117,10 +118,10 @@ Player = Entity.extend({
             var tilePosition = tiles[i].position;
 
             var tile = {};
-            tile.left = tilePosition.x * gGameEngine.tileSize + 5;
-            tile.top = tilePosition.y * gGameEngine.tileSize + 12;
-            tile.right = tile.left + gGameEngine.tileSize - 10;
-            tile.bottom = tile.top + gGameEngine.tileSize - 20;
+            tile.left = tilePosition.x * gGameEngine.tileSize + 25;
+            tile.top = tilePosition.y * gGameEngine.tileSize + 20;
+            tile.right = tile.left + gGameEngine.tileSize - 30;
+            tile.bottom = tile.top + gGameEngine.tileSize - 30;
 
             if(gGameEngine.intersectRect(player, tile)) {
                 return true;
@@ -156,6 +157,7 @@ Player = Entity.extend({
         this.alive = false;
 
         gGameEngine.stage.removeChild(this.bmp);
+        /*
         var posX = this.bmp.x;
         var posY = this.bmp.y;
         var spriteSheet = new createjs.SpriteSheet({
@@ -179,5 +181,6 @@ Player = Entity.extend({
 
         // Allow player walking on dead bodies
         gGameEngine.stage.setChildIndex(gGameEngine.player.bmp, gGameEngine.stage.getNumChildren() - 1);
+        */
     }
 });

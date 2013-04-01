@@ -1,6 +1,6 @@
 GameEngine = Class.extend({
     tileSize: 32,
-    tilesX: 15,
+    tilesX: 17,
     tilesY: 11,
     size: {},
     fps: 50,
@@ -12,7 +12,8 @@ GameEngine = Class.extend({
     tiles: [],
     bombs: [],
 
-    playerImg: null,
+    playerBoyImg: null,
+    playerGirlImg: null,
     tilesImgs: {},
     bombImg: null,
     fireImg: null,
@@ -36,7 +37,8 @@ GameEngine = Class.extend({
         var queue = new createjs.LoadQueue();
         var that = this;
         queue.addEventListener("complete", function() {
-            that.playerImg = queue.getResult("player");
+            that.playerBoyImg = queue.getResult("playerBoy");
+            that.playerGirlImg = queue.getResult("playerGirl");
             that.playerDeadImg = queue.getResult("playerDead");
             that.tilesImgs.grass = queue.getResult("tile_grass");
             that.tilesImgs.wall = queue.getResult("tile_wall");
@@ -46,7 +48,8 @@ GameEngine = Class.extend({
             that.setup();
         });
         queue.loadManifest([
-            {id: "player", src: "img/player.png"},
+            {id: "playerBoy", src: "img/george.png"},
+            {id: "playerGirl", src: "img/betty.png"},
             {id: "playerDead", src: "img/player_dead.png"},
             {id: "tile_grass", src: "img/tile_grass.png"},
             {id: "tile_wall", src: "img/tile_wall.png"},
