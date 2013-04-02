@@ -7,7 +7,7 @@
     "bootstrap": "~2.3.1",
     "PreloadJS": "*",
     "EaselJS": "*",
-    "SoundJS": "https://github.com/MattSkala/SoundJS.git"
+    "SoundJS": "*"
   },
   "ignore": [
     "**/.*",

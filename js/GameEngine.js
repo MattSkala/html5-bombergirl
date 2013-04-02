@@ -4,10 +4,11 @@ GameEngine = Class.extend({
     tilesY: 11,
     size: {},
     fps: 50,
-    botsCount: 0, /* 0 - 3 */
+    botsCount: 2, /* 0 - 3 */
     playersCount: 2, /* 1 - 2 */
 
     stage: null,
+    menu: null,
     players: [],
     bots: [],
     tiles: [],
@@ -20,7 +21,7 @@ GameEngine = Class.extend({
     fireImg: null,
 
     playing: true,
-    mute: false,
+    mute: true,
 
     init: function() {
         this.size = {
@@ -30,10 +31,9 @@ GameEngine = Class.extend({
     },
 
     load: function() {
-        console.log("Launching HTML5 Bomberman!");
-
         // Init canvas
         this.stage = new createjs.Stage("canvas");
+        this.stage.enableMouseOver();
 
         // Load assets
         var queue = new createjs.LoadQueue();
@@ -59,6 +59,9 @@ GameEngine = Class.extend({
         ]);
 
         createjs.Sound.registerSound("sound/bomb.mp3", "bomb");
+
+        // Create menu
+        this.menu = new Menu();
     },
 
     setup: function() {
@@ -129,6 +132,9 @@ GameEngine = Class.extend({
             bomb.update();
         }
 
+        // Menu
+        gGameEngine.menu.update();
+
         // Stage
         gGameEngine.stage.update();
     },
@@ -137,26 +143,33 @@ GameEngine = Class.extend({
         this.bots = [];
 
         if (this.botsCount >= 1) {
-            var bot = new Bot({ x: this.tilesX - 2, y: this.tilesY - 2 });
-            this.bots.push(bot);
-        }
-
-        if (this.botsCount >= 2) {
             var bot2 = new Bot({ x: 1, y: this.tilesY - 2 });
             this.bots.push(bot2);
         }
 
-        if (this.botsCount >= 3) {
+        if (this.botsCount >= 2) {
             var bot3 = new Bot({ x: this.tilesX - 2, y: 1 });
             this.bots.push(bot3);
+        }
+
+        if (this.botsCount >= 3) {
+            var bot = new Bot({ x: this.tilesX - 2, y: this.tilesY - 2 });
+            this.bots.push(bot);
+        }
+
+        if (this.botsCount >= 4) {
+            var bot = new Bot({ x: 1, y: 1 });
+            this.bots.push(bot);
         }
     },
 
     spawnPlayers: function() {
         this.players = [];
 
-        var player = new Player({ x: 1, y: 1 });
-        this.players.push(player);
+        if (this.playersCount >= 1) {
+            var player = new Player({ x: 1, y: 1 }, controls);
+            this.players.push(player);
+        }
 
         if (this.playersCount >= 2) {
             var controls = {
@@ -246,7 +259,7 @@ GameEngine = Class.extend({
         btnText.x = this.size.w / 2 - btnText.getMeasuredWidth() / 2;
         btnText.y = this.size.h / 2 - btnText.getMeasuredHeight() / 2 + btnTop;
         this.stage.addChild(btnText);
-        this.stage.enableMouseOver();
+
         btn.addEventListener('mouseover', function() {
             btnGraphics.beginFill("#dddddd");
             btnGraphics.drawRect(rectX, rectY, rectW, rectH);
@@ -283,6 +296,14 @@ GameEngine = Class.extend({
             }
         }
         return array;
+    },
+
+    /**
+     * Moves specified child to the front.
+     */
+    moveToFront: function(child) {
+            var children = gGameEngine.stage.getNumChildren();
+            gGameEngine.stage.setChildIndex(child, children - 1);
     },
 
     toggleSound: function() {
