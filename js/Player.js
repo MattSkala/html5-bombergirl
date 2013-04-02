@@ -48,7 +48,7 @@ Player = Entity.extend({
         if (controls) {
             this.controls = controls;
         }
-        var img = this instanceof Bot ? gGameEngine.playerGirlImg : gGameEngine.playerBoyImg;
+        var img = this instanceof Bot ? gGameEngine.playerBoyImg : gGameEngine.playerGirlImg;
         var spriteSheet = new createjs.SpriteSheet({
             images: [img],
             frames: { width: this.size.w, height: this.size.h, regX: 12, regY: 12 },
