@@ -22,6 +22,13 @@ InputEngine = Class.extend({
         this.bind(40, 'down');
         this.bind(39, 'right');
         this.bind(32, 'bomb');
+
+        this.bind(87, 'up2');
+        this.bind(65, 'left2');
+        this.bind(83, 'down2');
+        this.bind(68, 'right2');
+        this.bind(16, 'bomb2');
+
         this.bind(13, 'restart');
         this.bind(77, 'mute');
 

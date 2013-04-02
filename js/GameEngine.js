@@ -4,10 +4,11 @@ GameEngine = Class.extend({
     tilesY: 11,
     size: {},
     fps: 50,
-    botsCount: 3, /* 0 - 3 */
+    botsCount: 0, /* 0 - 3 */
+    playersCount: 2, /* 1 - 2 */
 
     stage: null,
-    player: null,
+    players: [],
     bots: [],
     tiles: [],
     bombs: [],
@@ -95,9 +96,7 @@ GameEngine = Class.extend({
         }
 
         this.spawnBots();
-
-        // Draw player
-        this.player = new Player({ x: 1, y: 1 });
+        this.spawnPlayers();
 
         // Toggle sound
         gInputEngine.addListener('mute', this.toggleSound);
@@ -113,7 +112,10 @@ GameEngine = Class.extend({
 
     update: function() {
         // Player
-        gGameEngine.player.update();
+        for (var i = 0; i < gGameEngine.players.length; i++) {
+            var player = gGameEngine.players[i];
+            player.update();
+        }
 
         // Bots
         for (var i = 0; i < gGameEngine.bots.length; i++) {
@@ -147,6 +149,25 @@ GameEngine = Class.extend({
         if (this.botsCount >= 3) {
             var bot3 = new Bot({ x: this.tilesX - 2, y: 1 });
             this.bots.push(bot3);
+        }
+    },
+
+    spawnPlayers: function() {
+        this.players = [];
+
+        var player = new Player({ x: 1, y: 1 });
+        this.players.push(player);
+
+        if (this.playersCount >= 2) {
+            var controls = {
+                'up': 'up2',
+                'left': 'left2',
+                'down': 'down2',
+                'right': 'right2',
+                'bomb': 'bomb2'
+            };
+            var player2 = new Player({ x: this.tilesX - 2, y: this.tilesY - 2 }, controls);
+            this.players.push(player2);
         }
     },
 

@@ -36,7 +36,18 @@ Player = Entity.extend({
 
     bombs: [],
 
-    init: function(position) {
+    controls: {
+        'up': 'up',
+        'left': 'left',
+        'down': 'down',
+        'right': 'right',
+        'bomb': 'bomb'
+    },
+
+    init: function(position, controls) {
+        if (controls) {
+            this.controls = controls;
+        }
         var img = this instanceof Bot ? gGameEngine.playerGirlImg : gGameEngine.playerBoyImg;
         var spriteSheet = new createjs.SpriteSheet({
             images: [img],
@@ -67,7 +78,7 @@ Player = Entity.extend({
         // Subscribe to bombs spawning
         if (!(this instanceof Bot)) {
             var that = this;
-            gInputEngine.addListener('bomb', function() {
+            gInputEngine.addListener(this.controls.bomb, function() {
                 if (that.bombs.length < that.bombsMax) {
                     var bomb = new Bomb(that.position, that.bombStrength);
                     gGameEngine.stage.addChild(bomb.bmp);
@@ -88,16 +99,16 @@ Player = Entity.extend({
         }
         var position = { x: this.bmp.x, y: this.bmp.y };
 
-        if (gInputEngine.actions['up']) {
+        if (gInputEngine.actions[this.controls.up]) {
             this.animate('up');
             position.y -= this.velocity;
-        } else if (gInputEngine.actions['down']) {
+        } else if (gInputEngine.actions[this.controls.down]) {
             this.animate('down');
             position.y += this.velocity;
-        } else if (gInputEngine.actions['left']) {
+        } else if (gInputEngine.actions[this.controls.left]) {
             this.animate('left');
             position.x -= this.velocity;
-        } else if (gInputEngine.actions['right']) {
+        } else if (gInputEngine.actions[this.controls.right]) {
             this.animate('right');
             position.x += this.velocity;
         } else {
