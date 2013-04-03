@@ -94,7 +94,7 @@ Player = Entity.extend({
     },
 
     update: function() {
-        if (!gGameEngine.playing || !this.alive) {
+        if (gGameEngine.menu.visible) {
             return;
         }
         var position = { x: this.bmp.x, y: this.bmp.y };

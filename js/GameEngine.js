@@ -20,7 +20,6 @@ GameEngine = Class.extend({
     bombImg: null,
     fireImg: null,
 
-    playing: true,
     mute: true,
 
     init: function() {
@@ -109,8 +108,6 @@ GameEngine = Class.extend({
             createjs.Ticker.addEventListener('tick', gGameEngine.update);
             createjs.Ticker.setFPS(this.fps);
         }
-
-        this.playing = true;
     },
 
     update: function() {
@@ -232,55 +229,13 @@ GameEngine = Class.extend({
     },
 
     gameOver: function(status) {
-        if (!gGameEngine.playing) { return; }
-        gGameEngine.playing = false;
+        if (gGameEngine.menu.visible) { return; }
 
-        // Game over text
-        var message = (status == 'win') ? "You Win! ;D" : "Game Over :(";
-        var text = new createjs.Text(message, "35px Helvetica", "#ffffff");
-        text.x = this.size.w / 2 - text.getMeasuredWidth() / 2;
-        text.y = this.size.h / 2 - text.getMeasuredHeight() / 2;
-        text.shadow = new createjs.Shadow("#000000", 5, 5, 10);
-        text.textBaseline = "alphabetic";
-        this.stage.addChild(text);
-
-        // Play again button
-        var btnTop = 50;
-        var rectW = 130;
-        var rectH = 35;
-        var rectX = this.size.w / 2 - rectW / 2;
-        var rectY = this.size.h / 2 - rectH / 2 + btnTop;
-        var btnGraphics = new createjs.Graphics().beginFill("#ffffff").drawRect(rectX, rectY, rectW, rectH);
-        var btn = new createjs.Shape(btnGraphics);
-        btn.shadow = new createjs.Shadow("#000000", 5, 5, 10);
-        this.stage.addChild(btn);
-
-        var btnText = new createjs.Text("Play again", "16px Helvetica", "#000000");
-        btnText.x = this.size.w / 2 - btnText.getMeasuredWidth() / 2;
-        btnText.y = this.size.h / 2 - btnText.getMeasuredHeight() / 2 + btnTop;
-        this.stage.addChild(btnText);
-
-        btn.addEventListener('mouseover', function() {
-            btnGraphics.beginFill("#dddddd");
-            btnGraphics.drawRect(rectX, rectY, rectW, rectH);
-        });
-        btn.addEventListener('mouseout', function() {
-            btnGraphics.beginFill("#ffffff");
-            btnGraphics.drawRect(rectX, rectY, rectW, rectH);
-        });
-        btn.addEventListener('mousedown', function() {
-            btnGraphics.beginFill("#aaaaaa");
-            btnGraphics.drawRect(rectX, rectY, rectW, rectH);
-        });
-        btn.addEventListener('click', function() {
-            gGameEngine.restart();
-        });
-
-        gInputEngine.removeAllListeners();
-
-        gInputEngine.addListener('restart', function() {
-            gGameEngine.restart();
-        });
+        if (status == 'win') {
+            this.menu.show([{text: 'You win!', color: '#669900'}, {text: ' ;D', color: '#99CC00'}]);
+        } else {
+            this.menu.show([{text: 'Game Over', color: '#CC0000'}, {text: ' :(', color: '#FF4444'}]);
+        }
     },
 
     restart: function() {

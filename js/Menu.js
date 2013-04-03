@@ -9,8 +9,54 @@ Menu = Class.extend({
         this.show();
     },
 
-    show: function() {
+    show: function(text) {
         this.visible = true;
+
+        this.draw(text);
+    },
+
+    hide: function() {
+        this.visible = false;
+
+        for (var i = 0; i < this.views.length; i++) {
+            gGameEngine.stage.removeChild(this.views[i]);
+        }
+
+        this.views = [];
+    },
+
+    update: function() {
+        if (this.visible) {
+            for (var i = 0; i < this.views.length; i++) {
+                gGameEngine.moveToFront(this.views[i]);
+            }
+        }
+    },
+
+    setHandCursor: function(btn) {
+        btn.addEventListener('mouseover', function() {
+            document.body.style.cursor = 'pointer';
+        });
+        btn.addEventListener('mouseout', function() {
+            document.body.style.cursor = 'auto';
+        });
+    },
+
+    setMode: function(mode) {
+        this.hide();
+
+        if (mode == 'single') {
+            gGameEngine.botsCount = 3;
+            gGameEngine.playersCount = 1;
+        } else {
+            gGameEngine.botsCount = 2;
+            gGameEngine.playersCount = 2;
+        }
+
+        gGameEngine.setup();
+    },
+
+    draw: function(text) {
         var that = this;
 
         // semi-transparent black background
@@ -20,8 +66,10 @@ Menu = Class.extend({
         this.views.push(bg);
 
         // game title
-        var title1 = new createjs.Text("Bomber", "bold 35px Helvetica", "#ffffff");
-        var title2 = new createjs.Text("girl", "bold 35px Helvetica", "#ff4444");
+        text = text || [{text: 'Bomber', color: '#ffffff'}, {text: 'girl', color: '#ff4444'}];
+
+        var title1 = new createjs.Text(text[0].text, "bold 35px Helvetica", text[0].color);
+        var title2 = new createjs.Text(text[1].text, "bold 35px Helvetica", text[1].color);
 
         var titleWidth = title1.getMeasuredWidth() + title2.getMeasuredWidth();
 
@@ -112,46 +160,6 @@ Menu = Class.extend({
         multiIconBoy.y = iconsY;
         gGameEngine.stage.addChild(multiIconBoy);
         this.views.push(multiIconBoy);
-    },
-
-    hide: function() {
-        this.visible = false;
-
-        for (var i = 0; i < this.views.length; i++) {
-            gGameEngine.stage.removeChild(this.views[i]);
-        }
-
-        this.views = [];
-    },
-
-    update: function() {
-        if (this.visible) {
-            for (var i = 0; i < this.views.length; i++) {
-                gGameEngine.moveToFront(this.views[i]);
-            }
-        }
-    },
-
-    setHandCursor: function(btn) {
-        btn.addEventListener('mouseover', function() {
-            document.body.style.cursor = 'pointer';
-        });
-        btn.addEventListener('mouseout', function() {
-            document.body.style.cursor = 'auto';
-        });
-    },
-
-    setMode: function(mode) {
-        this.hide();
-
-        if (mode == 'single') {
-            gGameEngine.botsCount = 3;
-            gGameEngine.playersCount = 1;
-        } else {
-            gGameEngine.botsCount = 2;
-            gGameEngine.playersCount = 2;
-        }
-
-        gGameEngine.setup();
     }
+
 });
