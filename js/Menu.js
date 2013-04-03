@@ -53,7 +53,7 @@ Menu = Class.extend({
             gGameEngine.playersCount = 2;
         }
 
-        gGameEngine.setup();
+        gGameEngine.restart();
     },
 
     draw: function(text) {

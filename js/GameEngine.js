@@ -257,8 +257,8 @@ GameEngine = Class.extend({
      * Moves specified child to the front.
      */
     moveToFront: function(child) {
-            var children = gGameEngine.stage.getNumChildren();
-            gGameEngine.stage.setChildIndex(child, children - 1);
+        var children = gGameEngine.stage.getNumChildren();
+        gGameEngine.stage.setChildIndex(child, children - 1);
     },
 
     toggleSound: function() {
@@ -267,6 +267,16 @@ GameEngine = Class.extend({
         } else {
             gGameEngine.mute = true;
         }
+    },
+
+    getPlayersAlive: function() {
+        var playersAlive = 0;
+        for (var i = 0; i < gGameEngine.players.length; i++) {
+            if (gGameEngine.players[i].alive) {
+                playersAlive++;
+            }
+        }
+        return playersAlive;
     }
 });
 

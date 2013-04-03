@@ -162,11 +162,11 @@ Bot = Player.extend({
     },
 
     /**
-     * Game is over when no bots left.
+     * Game is over when no bots and one player left.
      */
     die: function() {
         this._super();
-        var anyoneAlive = false;
+        var botsAlive = false;
 
         // Cache bots
         var bots = [];
@@ -181,10 +181,11 @@ Bot = Player.extend({
                 gGameEngine.bots.splice(i, 1);
             }
             if (bot.alive) {
-                anyoneAlive = true;
+                botsAlive = true;
             }
         }
-        if (!anyoneAlive) {
+
+        if (!botsAlive && gGameEngine.getPlayersAlive() == 1) {
             gGameEngine.gameOver('win');
         }
     },
