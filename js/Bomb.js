@@ -58,6 +58,15 @@ Bomb = Entity.extend({
         this.bmp.y = pixels.y + this.size.h / 4;
 
         this.fires = [];
+
+        // Allow players and bots that are already on this position to escape
+        var players = gGameEngine.getPlayersAndBots();
+        for (var i = 0; i < players.length; i++) {
+            var player = players[i];
+            if (Utils.comparePositions(player.position, this.position)) {
+                player.escapeBomb = this;
+            }
+        }
     },
 
     update: function() {

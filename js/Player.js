@@ -44,6 +44,11 @@ Player = Entity.extend({
         'bomb': 'bomb'
     },
 
+    /**
+     * Bomb that player can escape from even when there is a collision
+     */
+    escapeBomb: null,
+
     init: function(position, controls) {
         if (controls) {
             this.controls = controls;
@@ -131,9 +136,7 @@ Player = Entity.extend({
         }
 
         if (this.detectFireCollision()) {
-            // We have to die
             this.die();
-            gGameEngine.gameOver('lose');
         }
     },
 
@@ -182,12 +185,20 @@ Player = Entity.extend({
             var bomb = gGameEngine.bombs[i];
             // Compare bomb position
             if (bomb.position.x == position.x && bomb.position.y == position.y) {
-                // Allow to escape from my latest bomb
-                if (bomb != this.bombs[this.bombs.length - 1]) {
+                // Allow to escape from bomb that appeared on my field
+                if (bomb == this.escapeBomb) {
+                    return false;
+                } else {
                     return true;
                 }
             }
         }
+
+        // I have escaped already
+        if (this.escapeBomb) {
+            this.escapeBomb = null;
+        }
+
         return false;
     },
 
@@ -217,8 +228,10 @@ Player = Entity.extend({
     die: function() {
         this.alive = false;
 
-        if (gGameEngine.getPlayersAlive() == 1 && gGameEngine.playersCount == 2) {
+        if (gGameEngine.countPlayersAlive() == 1 && gGameEngine.playersCount == 2) {
             gGameEngine.gameOver('win');
+        } else if (gGameEngine.countPlayersAlive() == 0) {
+            gGameEngine.gameOver('lose');
         }
 
         gGameEngine.stage.removeChild(this.bmp);

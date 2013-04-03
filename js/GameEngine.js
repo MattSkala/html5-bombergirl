@@ -279,7 +279,7 @@ GameEngine = Class.extend({
         }
     },
 
-    getPlayersAlive: function() {
+    countPlayersAlive: function() {
         var playersAlive = 0;
         for (var i = 0; i < gGameEngine.players.length; i++) {
             if (gGameEngine.players[i].alive) {
@@ -287,6 +287,20 @@ GameEngine = Class.extend({
             }
         }
         return playersAlive;
+    },
+
+    getPlayersAndBots: function() {
+        var players = [];
+
+        for (var i = 0; i < gGameEngine.players.length; i++) {
+            players.push(gGameEngine.players[i]);
+        }
+
+        for (var i = 0; i < gGameEngine.bots.length; i++) {
+            players.push(gGameEngine.bots[i]);
+        }
+
+        return players;
     }
 });
 
