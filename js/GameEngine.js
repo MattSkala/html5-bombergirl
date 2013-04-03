@@ -103,6 +103,16 @@ GameEngine = Class.extend({
         // Toggle sound
         gInputEngine.addListener('mute', this.toggleSound);
 
+        // Restart listener
+        gInputEngine.addListener('restart', function() {
+            if (gGameEngine.playersCount == 0) {
+                gGameEngine.menu.setMode('single');
+            } else {
+                gGameEngine.menu.hide();
+                gGameEngine.restart();
+            }
+        });
+
         // Start loop
         if (!createjs.Ticker.hasEventListener('tick')) {
             createjs.Ticker.addEventListener('tick', gGameEngine.update);
@@ -164,7 +174,7 @@ GameEngine = Class.extend({
         this.players = [];
 
         if (this.playersCount >= 1) {
-            var player = new Player({ x: 1, y: 1 }, controls);
+            var player = new Player({ x: 1, y: 1 });
             this.players.push(player);
         }
 
