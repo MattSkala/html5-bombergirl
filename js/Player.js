@@ -84,6 +84,14 @@ Player = Entity.extend({
         if (!(this instanceof Bot)) {
             var that = this;
             gInputEngine.addListener(this.controls.bomb, function() {
+                // Check whether there is already bomb on this position
+                for (var i = 0; i < gGameEngine.bombs.length; i++) {
+                    var bomb = gGameEngine.bombs[i];
+                    if (Utils.comparePositions(bomb.position, that.position)) {
+                        return;
+                    }
+                }
+
                 var unexplodedBombs = 0;
                 for (var i = 0; i < that.bombs.length; i++) {
                     if (!that.bombs[i].exploded) {

@@ -213,6 +213,13 @@ Bot = Player.extend({
      * Places the bomb in current position
      */
     plantBomb: function() {
+        for (var i = 0; i < gGameEngine.bombs.length; i++) {
+            var bomb = gGameEngine.bombs[i];
+            if (Utils.comparePositions(bomb.position, this.position)) {
+                return;
+            }
+        }
+
         if (this.bombs.length < this.bombsMax) {
             var bomb = new Bomb(this.position, this.bombStrength);
             gGameEngine.stage.addChild(bomb.bmp);
