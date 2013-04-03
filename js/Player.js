@@ -1,6 +1,6 @@
 Player = Entity.extend({
     /**
-     * Moving speed in pixels per frame
+     * Moving speed
      */
     velocity: 2,
 
@@ -244,7 +244,7 @@ Player = Entity.extend({
      */
     applyBonus: function(bonus) {
         if (bonus.type == 'speed') {
-            this.velocity++;
+            this.velocity += 0.8;
         } else if (bonus.type == 'bomb') {
             this.bombsMax++;
         } else if (bonus.type == 'fire') {

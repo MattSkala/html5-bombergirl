@@ -102,8 +102,17 @@ Bot = Player.extend({
     moveToTargetPosition: function() {
         this.animate(this.direction);
 
-        this.bmp.x += this.dirX * this.velocity;
-        this.bmp.y += this.dirY * this.velocity;
+        var velocity = this.velocity;
+        var distanceX = Math.abs(this.targetBitmapPosition.x - this.bmp.x);
+        var distanceY = Math.abs(this.targetBitmapPosition.y - this.bmp.y);
+        if (distanceX > 0 && distanceX < this.velocity) {
+            velocity = distanceX;
+        } else if (distanceY > 0 && distanceY < this.velocity) {
+            velocity = distanceY;
+        }
+
+        this.bmp.x += this.dirX * velocity;
+        this.bmp.y += this.dirY * velocity;
 
         this.updatePosition();
     },
