@@ -78,10 +78,15 @@ Player = Entity.extend({
         // Subscribe to bombs spawning
         if (!(this instanceof Bot)) {
             var that = this;
-            console.log(this.controls);
             gInputEngine.addListener(this.controls.bomb, function() {
-                console.log('bomb addlistener explode');
-                if (that.bombs.length < that.bombsMax) {
+                var unexplodedBombs = 0;
+                for (var i = 0; i < that.bombs.length; i++) {
+                    if (!that.bombs[i].exploded) {
+                        unexplodedBombs++;
+                    }
+                }
+
+                if (unexplodedBombs < that.bombsMax) {
                     var bomb = new Bomb(that.position, that.bombStrength);
                     gGameEngine.stage.addChild(bomb.bmp);
                     that.bombs.push(bomb);
