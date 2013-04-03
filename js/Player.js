@@ -123,7 +123,7 @@ Player = Entity.extend({
         }
 
         if (position.x != this.bmp.x || position.y != this.bmp.y) {
-            if (!this.detectWallCollision(position)) {
+            if (!this.detectWallCollision(position) && !this.detectBombCollision(position)) {
                 this.bmp.x = position.x;
                 this.bmp.y = position.y;
                 this.updatePosition();
@@ -167,6 +167,25 @@ Player = Entity.extend({
 
             if(gGameEngine.intersectRect(player, tile)) {
                 return true;
+            }
+        }
+        return false;
+    },
+
+    /**
+     * Returns true when the bomb collision is detected and we should not move to target position.
+     */
+    detectBombCollision: function(pixels) {
+        var position = gGameEngine.convertToEntityPosition(pixels.x, pixels.y);
+
+        for (var i = 0; i < gGameEngine.bombs.length; i++) {
+            var bomb = gGameEngine.bombs[i];
+            // Compare bomb position
+            if (bomb.position.x == position.x && bomb.position.y == position.y) {
+                // Allow to escape from my latest bomb
+                if (bomb != this.bombs[this.bombs.length - 1]) {
+                    return true;
+                }
             }
         }
         return false;
