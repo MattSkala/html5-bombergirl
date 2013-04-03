@@ -31,7 +31,7 @@ Tile = Entity.extend({
             img = gGameEngine.tilesImgs.wood;
         }
         this.bmp = new createjs.Bitmap(img);
-        var pixels = gGameEngine.convertToBitmapPosition(position.x, position.y);
+        var pixels = Utils.convertToBitmapPosition(position);
         this.bmp.x = pixels.x;
         this.bmp.y = pixels.y;
     },

@@ -69,7 +69,7 @@ Player = Entity.extend({
         this.bmp = new createjs.BitmapAnimation(spriteSheet);
 
         this.position = position;
-        var pixels = gGameEngine.convertToBitmapPosition(position.x, position.y);
+        var pixels = Utils.convertToBitmapPosition(position);
         this.bmp.x = pixels.x;
         this.bmp.y = pixels.y;
 
@@ -106,7 +106,7 @@ Player = Entity.extend({
                     gGameEngine.bombs.push(bomb);
 
                     bomb.setExplodeListener(function() {
-                        gGameEngine.removeFromArray(that.bombs, bomb);
+                        Utils.removeFromArray(that.bombs, bomb);
                     });
                 }
             });
@@ -146,13 +146,15 @@ Player = Entity.extend({
         if (this.detectFireCollision()) {
             this.die();
         }
+
+        this.handleBonusCollision();
     },
 
     /**
      * Calculates and updates entity position according to its actual bitmap position
      */
     updatePosition: function() {
-        this.position = gGameEngine.convertToEntityPosition(this.bmp.x, this.bmp.y);
+        this.position = Utils.convertToEntityPosition(this.bmp);
     },
 
     /**
@@ -187,7 +189,7 @@ Player = Entity.extend({
      * Returns true when the bomb collision is detected and we should not move to target position.
      */
     detectBombCollision: function(pixels) {
-        var position = gGameEngine.convertToEntityPosition(pixels.x, pixels.y);
+        var position = Utils.convertToEntityPosition(pixels);
 
         for (var i = 0; i < gGameEngine.bombs.length; i++) {
             var bomb = gGameEngine.bombs[i];
@@ -222,6 +224,32 @@ Player = Entity.extend({
             }
         }
         return false;
+    },
+
+    /**
+     * Checks whether we have got bonus and applies it.
+     */
+    handleBonusCollision: function() {
+        for (var i = 0; i < gGameEngine.bonuses.length; i++) {
+            var bonus = gGameEngine.bonuses[i];
+            if (Utils.comparePositions(bonus.position, this.position)) {
+                this.applyBonus(bonus);
+                bonus.destroy();
+            }
+        }
+    },
+
+    /**
+     * Applies bonus.
+     */
+    applyBonus: function(bonus) {
+        if (bonus.type == 'speed') {
+            this.velocity++;
+        } else if (bonus.type == 'bomb') {
+            this.bombsMax++;
+        } else if (bonus.type == 'fire') {
+            this.bombStrength++;
+        }
     },
 
     /**

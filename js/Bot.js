@@ -68,6 +68,8 @@ Bot = Player.extend({
             // Bot has to die
             this.die();
         }
+
+        this.handleBonusCollision();
     },
 
     /**
@@ -91,7 +93,7 @@ Bot = Player.extend({
         }
         this.targetPosition = this.getRandomTarget(targets);
         this.loadTargetPosition(this.targetPosition);
-        this.targetBitmapPosition = gGameEngine.convertToBitmapPosition(this.targetPosition.x, this.targetPosition.y);
+        this.targetBitmapPosition = Utils.convertToBitmapPosition(this.targetPosition);
     },
 
     /**
@@ -185,7 +187,7 @@ Bot = Player.extend({
             }
         }
 
-        if (!botsAlive && gGameEngine.getPlayersAlive() == 1) {
+        if (!botsAlive && gGameEngine.countPlayersAlive() == 1) {
             gGameEngine.gameOver('win');
         }
     },
@@ -228,7 +230,7 @@ Bot = Player.extend({
 
             var that = this;
             bomb.setExplodeListener(function() {
-                gGameEngine.removeFromArray(that.bombs, bomb);
+                Utils.removeFromArray(that.bombs, bomb);
                 that.wait = false;
                 that.steps = false;
             });

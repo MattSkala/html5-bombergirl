@@ -13,12 +13,14 @@ GameEngine = Class.extend({
     bots: [],
     tiles: [],
     bombs: [],
+    bonuses: [],
 
     playerBoyImg: null,
     playerGirlImg: null,
     tilesImgs: {},
     bombImg: null,
     fireImg: null,
+    bonusesImg: null,
 
     mute: true,
 
@@ -45,6 +47,7 @@ GameEngine = Class.extend({
             that.tilesImgs.wood = queue.getResult("tile_wood");
             that.bombImg = queue.getResult("bomb");
             that.fireImg = queue.getResult("fire");
+            that.bonusesImg = queue.getResult("bonuses");
             that.setup();
         });
         queue.loadManifest([
@@ -54,7 +57,8 @@ GameEngine = Class.extend({
             {id: "tile_wall", src: "img/tile_wall.png"},
             {id: "tile_wood", src: "img/tile_wood.png"},
             {id: "bomb", src: "img/bomb.png"},
-            {id: "fire", src: "img/fire.png"}
+            {id: "fire", src: "img/fire.png"},
+            {id: "bonuses", src: "img/bonuses.png"}
         ]);
 
         createjs.Sound.registerSound("sound/bomb.mp3", "bomb");
@@ -70,32 +74,10 @@ GameEngine = Class.extend({
 
         this.bombs = [];
         this.tiles = [];
-        // Draw tiles
-        for (var i = 0; i < this.tilesY; i++) {
-            for (var j = 0; j < this.tilesX; j++) {
-                if ((i == 0 || j == 0 || i == this.tilesY - 1 || j == this.tilesX - 1)
-                    || (j % 2 == 0 && i % 2 == 0)) {
-                    // Wall tiles
-                    var tile = new Tile('wall', {x: j, y: i});
-                    this.stage.addChild(tile.bmp);
-                    this.tiles.push(tile);
-                } else {
-                    // Grass tiles
-                    var tile = new Tile('grass', {x: j, y: i});
-                    this.stage.addChild(tile.bmp);
+        this.bonuses = [];
 
-                    // Wood tiles
-                    if (!(i <= 2 && j <= 2)
-                        && !(i >= this.tilesY - 3 && j >= this.tilesX - 3)
-                        && !(i <= 2 && j >= this.tilesX - 3)
-                        && !(i >= this.tilesY - 3 && j <= 2)) {
-                        var wood = new Tile('wood', {x: j, y: i});
-                        this.stage.addChild(wood.bmp);
-                        this.tiles.push(wood);
-                    }
-                }
-            }
-        }
+        // Draw tiles
+        this.drawTiles();
 
         this.spawnBots();
         this.spawnPlayers();
@@ -146,6 +128,41 @@ GameEngine = Class.extend({
         gGameEngine.stage.update();
     },
 
+    drawTiles: function() {
+        for (var i = 0; i < this.tilesY; i++) {
+            for (var j = 0; j < this.tilesX; j++) {
+                if ((i == 0 || j == 0 || i == this.tilesY - 1 || j == this.tilesX - 1)
+                    || (j % 2 == 0 && i % 2 == 0)) {
+                    // Wall tiles
+                    var tile = new Tile('wall', { x: j, y: i });
+                    this.stage.addChild(tile.bmp);
+                    this.tiles.push(tile);
+                } else {
+                    // Grass tiles
+                    var tile = new Tile('grass', { x: j, y: i });
+                    this.stage.addChild(tile.bmp);
+
+                    // Wood tiles
+                    if (!(i <= 2 && j <= 2)
+                        && !(i >= this.tilesY - 3 && j >= this.tilesX - 3)
+                        && !(i <= 2 && j >= this.tilesX - 3)
+                        && !(i >= this.tilesY - 3 && j <= 2)) {
+
+                        // Bonus
+                        if (Math.random() < 0.2) {
+                            var bonus = new Bonus({ x: j, y: i });
+                            this.bonuses.push(bonus);
+                        }
+
+                        var wood = new Tile('wood', { x: j, y: i });
+                        this.stage.addChild(wood.bmp);
+                        this.tiles.push(wood);
+                    }
+                }
+            }
+        }
+    },
+
     spawnBots: function() {
         this.bots = [];
 
@@ -192,26 +209,6 @@ GameEngine = Class.extend({
     },
 
     /**
-     * Convert bitmap pixels position to entity on grid position
-     */
-    convertToEntityPosition: function(x, y) {
-        var position = {};
-        position.x = Math.round(x / gGameEngine.tileSize);
-        position.y = Math.round(y /gGameEngine.tileSize);
-        return position;
-    },
-
-    /**
-     * Convert entity on grid position to bitmap pixels position
-     */
-    convertToBitmapPosition: function(x, y) {
-        var position = {};
-        position.x = x * gGameEngine.tileSize;
-        position.y = y * gGameEngine.tileSize;
-        return position;
-    },
-
-    /**
      * Checks whether two rectangles intersect.
      */
     intersectRect: function(a, b) {
@@ -252,15 +249,6 @@ GameEngine = Class.extend({
         gInputEngine.removeAllListeners();
         gGameEngine.stage.removeAllChildren();
         gGameEngine.setup();
-    },
-
-    removeFromArray: function(array, item) {
-        for (var i = 0; i < array.length; i++) {
-            if (item == array[i]) {
-                array.splice(i, 1);
-            }
-        }
-        return array;
     },
 
     /**
