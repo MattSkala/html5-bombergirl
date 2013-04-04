@@ -86,36 +86,10 @@ Bomb = Entity.extend({
         }
 
         // Fire in all directions!
-        this.fire(this.position);
-        for (var i = 0; i < 4; i++) {
-            var dirX;
-            var dirY;
-            if (i == 0) { dirX = 1; dirY = 0; }
-            else if (i == 1) { dirX = -1; dirY = 0; }
-            else if (i == 2) { dirX = 0; dirY = 1; }
-            else if (i == 3) { dirX = 0; dirY = -1; }
-
-            for (var j = 1; j <= this.strength; j++) {
-                var explode = true;
-                var last = false;
-
-                var position = { x: this.position.x + j * dirX, y: this.position.y + j * dirY };
-                var material = gGameEngine.getTileMaterial(position);
-                if (material == 'wall') { // One can not simply burn the wall
-                    explode = false;
-                    last = true;
-                } else if (material == 'wood') {
-                    explode = true;
-                    last = true;
-                }
-
-                if (explode) {
-                    this.fire(position);
-                }
-                if (last) {
-                    break;
-                }
-            }
+        var positions = this.getDangerPositions();
+        for (var i = 0; i < positions.length; i++) {
+            var position = positions[i];
+            this.fire(position);
         }
 
         // Cache tiles
@@ -138,6 +112,50 @@ Bomb = Entity.extend({
         }
 
         this.remove();
+    },
+
+    /**
+     * Returns positions that are going to be covered by fire.
+     */
+    getDangerPositions: function() {
+        var positions = [];
+        positions.push(this.position);
+
+        for (var i = 0; i < 4; i++) {
+            var dirX;
+            var dirY;
+            if (i == 0) { dirX = 1; dirY = 0; }
+            else if (i == 1) { dirX = -1; dirY = 0; }
+            else if (i == 2) { dirX = 0; dirY = 1; }
+            else if (i == 3) { dirX = 0; dirY = -1; }
+
+            for (var j = 1; j <= this.strength; j++) {
+                var explode = true;
+                var last = false;
+
+                var position = { x: this.position.x + j * dirX, y: this.position.y + j * dirY };
+
+
+                var material = gGameEngine.getTileMaterial(position);
+                if (material == 'wall') { // One can not simply burn the wall
+                    explode = false;
+                    last = true;
+                } else if (material == 'wood') {
+                    explode = true;
+                    last = true;
+                }
+
+                if (explode) {
+                    positions.push(position);
+                }
+
+                if (last) {
+                    break;
+                }
+            }
+        }
+
+        return positions;
     },
 
     fire: function(position) {

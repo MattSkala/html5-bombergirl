@@ -30,7 +30,6 @@ Bot = Player.extend({
     bombsMax: 1,
 
     wait: false,
-    steps: 0,
 
     init: function(position) {
         this._super(position);
@@ -43,28 +42,31 @@ Bot = Player.extend({
             return;
         }
 
-        if (!this.wait) {
-            if (this.targetBitmapPosition.x == this.bmp.x && this.targetBitmapPosition.y == this.bmp.y) {
+        this.wait = false;
+        if (this.targetBitmapPosition.x == this.bmp.x && this.targetBitmapPosition.y == this.bmp.y) {
 
-                // If we bumped into the wood, burn it!
-                var wood = this.getNearWood();
-                if (wood) {
-                    this.plantBomb();
+            // If we bumped into the wood, burn it!
+            var wood = this.getNearWood();
+            if (wood) {
+                this.plantBomb();
+            }
+
+            // When in safety, wait until explosion
+            if (this.bombs.length) {
+                if (this.isSafe()) {
+                    this.wait = true;
                 }
+            }
 
-                // When in safety, wait until explosion
-                if (this.bombs.length) {
-                    this.steps++;
-                    if (this.steps > 2) {
-                        this.wait = true;
-                    }
-                }
-
+            if (!this.wait) {
                 this.findTargetPosition();
             }
-            this.moveToTargetPosition();
-            this.handleBonusCollision();
         }
+
+        if (!this.wait) {
+            this.moveToTargetPosition();
+        }
+        this.handleBonusCollision();
 
         if (this.detectFireCollision()) {
             // Bot has to die
@@ -173,6 +175,13 @@ Bot = Player.extend({
         return targets[Math.floor(Math.random() * targets.length)];
     },
 
+    applyBonus: function(bonus) {
+        this._super(bonus);
+
+        // It is too dangerous to have more bombs available
+        this.bombsMax = 1;
+    },
+
     /**
      * Game is over when no bots and one player left.
      */
@@ -242,8 +251,24 @@ Bot = Player.extend({
             bomb.setExplodeListener(function() {
                 Utils.removeFromArray(that.bombs, bomb);
                 that.wait = false;
-                that.steps = false;
             });
         }
+    },
+
+    /**
+     * Checks whether we are on a safe tile and possible explosion cannot kill us
+     */
+    isSafe: function() {
+        for (var i = 0; i < gGameEngine.bombs.length; i++) {
+            var bomb = gGameEngine.bombs[i];
+            var fires = bomb.getDangerPositions();
+            for (var j = 0; j < fires.length; j++) {
+                var fire = fires[j];
+                if (Utils.comparePositions(fire, this.position)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 });
