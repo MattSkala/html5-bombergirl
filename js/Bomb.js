@@ -82,7 +82,8 @@ Bomb = Entity.extend({
         this.exploded = true;
 
         if (!gGameEngine.mute) {
-            createjs.Sound.play("bomb");
+            var bombSound = createjs.Sound.play("bomb");
+            bombSound.setVolume(0.5);
         }
 
         // Fire in all directions!

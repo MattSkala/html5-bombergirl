@@ -23,6 +23,9 @@ GameEngine = Class.extend({
     bonusesImg: null,
 
     mute: true,
+    soundtrackLoaded: false,
+    soundtrackPlaying: false,
+    soundtrack: null,
 
     init: function() {
         this.size = {
@@ -62,6 +65,8 @@ GameEngine = Class.extend({
         ]);
 
         createjs.Sound.registerSound("sound/bomb.mp3", "bomb");
+        createjs.Sound.registerSound("sound/game.mp3", "game");
+        createjs.Sound.addEventListener("loadComplete", this.onSoundLoaded);
 
         // Create menu
         this.menu = new Menu();
@@ -99,6 +104,29 @@ GameEngine = Class.extend({
         if (!createjs.Ticker.hasEventListener('tick')) {
             createjs.Ticker.addEventListener('tick', gGameEngine.update);
             createjs.Ticker.setFPS(this.fps);
+        }
+
+        if (gGameEngine.playersCount > 0) {
+            if (this.soundtrackLoaded) {
+                this.mute = false;
+                this.playSoundtrack();
+            }
+        }
+    },
+
+    onSoundLoaded: function(sound) {
+        if (sound.id == 'game') {
+            gGameEngine.soundtrackLoaded = true;
+            if (gGameEngine.playersCount > 0) {
+                gGameEngine.playSoundtrack();
+            }
+        }
+    },
+
+    playSoundtrack: function() {
+        if (!gGameEngine.soundtrackPlaying) {
+            gGameEngine.soundtrack = createjs.Sound.play("game", "none", 0, 0, -1);
+            gGameEngine.soundtrackPlaying = true;
         }
     },
 
@@ -276,8 +304,10 @@ GameEngine = Class.extend({
     toggleSound: function() {
         if (gGameEngine.mute) {
             gGameEngine.mute = false;
+            gGameEngine.soundtrack.resume();
         } else {
             gGameEngine.mute = true;
+            gGameEngine.soundtrack.pause();
         }
     },
 
