@@ -239,9 +239,23 @@ GameEngine = Class.extend({
         if (gGameEngine.menu.visible) { return; }
 
         if (status == 'win') {
-            this.menu.show([{text: 'You win!', color: '#669900'}, {text: ' ;D', color: '#99CC00'}]);
+            var winText = "You won!";
+            if (gGameEngine.playersCount > 1) {
+                var winner = gGameEngine.getWinner();
+                winText = winner == 0 ? "Player 1 won!" : "Player 2 won!";
+            }
+            this.menu.show([{text: winText, color: '#669900'}, {text: ' ;D', color: '#99CC00'}]);
         } else {
             this.menu.show([{text: 'Game Over', color: '#CC0000'}, {text: ' :(', color: '#FF4444'}]);
+        }
+    },
+
+    getWinner: function() {
+        for (var i = 0; i < gGameEngine.players.length; i++) {
+            var player = gGameEngine.players[i];
+            if (player.alive) {
+                return i;
+            }
         }
     },
 
