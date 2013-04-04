@@ -218,7 +218,8 @@ Player = Entity.extend({
             var bomb = bombs[i];
             for (var j = 0; j < bomb.fires.length; j++) {
                 var fire = bomb.fires[j];
-                if (bomb.exploded && fire.position.x == this.position.x && fire.position.y == this.position.y) {
+                var collision = bomb.exploded && fire.position.x == this.position.x && fire.position.y == this.position.y;
+                if (collision) {
                     return true;
                 }
             }

@@ -38,30 +38,31 @@ Bot = Player.extend({
     },
 
     update: function() {
-         if (!this.alive || this.wait) {
+         if (!this.alive) {
             return;
         }
 
-        if (this.targetBitmapPosition.x == this.bmp.x && this.targetBitmapPosition.y == this.bmp.y) {
+        if (!this.wait) {
+            if (this.targetBitmapPosition.x == this.bmp.x && this.targetBitmapPosition.y == this.bmp.y) {
 
-            // If we bumped into the wood, burn it!
-            var wood = this.getNearWood();
-            if (wood) {
-                this.plantBomb();
-            }
-
-            // When in safety, wait until explosion
-            if (this.bombs.length) {
-                this.steps++;
-                if (this.steps > 2) {
-                    this.wait = true;
+                // If we bumped into the wood, burn it!
+                var wood = this.getNearWood();
+                if (wood) {
+                    this.plantBomb();
                 }
-            }
 
-            this.findTargetPosition();
+                // When in safety, wait until explosion
+                if (this.bombs.length) {
+                    this.steps++;
+                    if (this.steps > 2) {
+                        this.wait = true;
+                    }
+                }
+
+                this.findTargetPosition();
+            }
             this.moveToTargetPosition();
-        } else {
-            this.moveToTargetPosition();
+            this.handleBonusCollision();
         }
 
         if (this.detectFireCollision()) {
@@ -69,7 +70,6 @@ Bot = Player.extend({
             this.die();
         }
 
-        this.handleBonusCollision();
     },
 
     /**

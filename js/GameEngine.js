@@ -149,7 +149,7 @@ GameEngine = Class.extend({
                         && !(i >= this.tilesY - 3 && j <= 2)) {
 
                         // Bonus
-                        if (Math.random() < 0.2) {
+                        if (Math.random() < 0.15) {
                             var bonus = new Bonus({ x: j, y: i });
                             this.bonuses.push(bonus);
                         }
