@@ -53,7 +53,7 @@ Bot = Player.extend({
 
             // When in safety, wait until explosion
             if (this.bombs.length) {
-                if (this.isSafe()) {
+                if (this.isSafe(this.position)) {
                     this.wait = true;
                 }
             }
@@ -138,7 +138,16 @@ Bot = Player.extend({
                 targets.push(position);
             }
         }
-        return targets;
+
+        var safeTargets = [];
+        for (var i = 0; i < targets.length; i++) {
+            var target = targets[i];
+            if (this.isSafe(target)) {
+                safeTargets.push(target);
+            }
+        }
+
+        return safeTargets.length > 0 ? safeTargets : targets;
     },
 
     /**
@@ -256,15 +265,15 @@ Bot = Player.extend({
     },
 
     /**
-     * Checks whether we are on a safe tile and possible explosion cannot kill us
+     * Checks whether position is safe  and possible explosion cannot kill us
      */
-    isSafe: function() {
+    isSafe: function(position) {
         for (var i = 0; i < gGameEngine.bombs.length; i++) {
             var bomb = gGameEngine.bombs[i];
             var fires = bomb.getDangerPositions();
             for (var j = 0; j < fires.length; j++) {
                 var fire = fires[j];
-                if (Utils.comparePositions(fire, this.position)) {
+                if (Utils.comparePositions(fire, position)) {
                     return false;
                 }
             }
