@@ -49,6 +49,8 @@ Player = Entity.extend({
      */
     escapeBomb: null,
 
+    deadTimer: 0,
+
     init: function(position, controls) {
         if (controls) {
             this.controls = controls;
@@ -63,7 +65,7 @@ Player = Entity.extend({
                 left: [4, 7, 'left', 10],
                 up: [8, 11, 'up', 10],
                 right: [12, 15, 'right', 10],
-                dead: [0, 0, 'dead', 10]
+                dead: [16, 16, 'dead', 10]
             }
         });
         this.bmp = new createjs.BitmapAnimation(spriteSheet);
@@ -114,6 +116,10 @@ Player = Entity.extend({
     },
 
     update: function() {
+        if (!this.alive) {
+            //this.fade();
+            return;
+        }
         if (gGameEngine.menu.visible) {
             return;
         }
@@ -271,6 +277,23 @@ Player = Entity.extend({
             gGameEngine.gameOver('lose');
         }
 
-        gGameEngine.stage.removeChild(this.bmp);
+        this.bmp.gotoAndPlay('dead');
+        this.fade();
+    },
+
+    fade: function() {
+        var timer = 0;
+        var bmp = this.bmp;
+        var fade = setInterval(function() {
+            timer++;
+
+            if (timer > 30) {
+                bmp.alpha -= 0.05;
+            }
+            if (bmp.alpha <= 0) {
+                clearInterval(fade);
+            }
+
+        }, 30);
     }
 });

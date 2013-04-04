@@ -39,6 +39,7 @@ Bot = Player.extend({
 
     update: function() {
          if (!this.alive) {
+            this.fade();
             return;
         }
 
