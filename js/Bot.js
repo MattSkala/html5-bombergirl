@@ -31,9 +31,14 @@ Bot = Player.extend({
 
     wait: false,
 
+    startTimerMax: 60,
+    startTimer: 0,
+    started: false,
+
     init: function(position) {
         this._super(position);
         this.findTargetPosition();
+        this.startTimerMax = Math.random() * 60;
     },
 
     update: function() {
@@ -43,6 +48,16 @@ Bot = Player.extend({
         }
 
         this.wait = false;
+
+        if (!this.started && this.startTimer < this.startTimerMax) {
+            this.startTimer++;
+            if (this.startTimer >= this.startTimerMax) {
+                this.started = true;
+            }
+            this.animate('idle');
+            this.wait = true;
+        }
+
         if (this.targetBitmapPosition.x == this.bmp.x && this.targetBitmapPosition.y == this.bmp.y) {
 
             // If we bumped into the wood, burn it!
@@ -95,7 +110,7 @@ Bot = Player.extend({
             }
         }
         this.targetPosition = this.getRandomTarget(targets);
-        if (this.targetPosition.x) {
+        if (this.targetPosition && this.targetPosition.x) {
             this.loadTargetPosition(this.targetPosition);
             this.targetBitmapPosition = Utils.convertToBitmapPosition(this.targetPosition);
         }
