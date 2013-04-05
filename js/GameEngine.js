@@ -125,7 +125,7 @@ GameEngine = Class.extend({
     playSoundtrack: function() {
         if (!gGameEngine.soundtrackPlaying) {
             gGameEngine.soundtrack = createjs.Sound.play("game", "none", 0, 0, -1);
-            gGameEngine.soundtrack.setVolume(0.5);
+            gGameEngine.soundtrack.setVolume(1);
             gGameEngine.soundtrackPlaying = true;
         }
     },
