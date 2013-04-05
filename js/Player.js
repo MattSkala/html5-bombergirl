@@ -125,27 +125,51 @@ Player = Entity.extend({
         }
         var position = { x: this.bmp.x, y: this.bmp.y };
 
+        var dirX = 0;
+        var dirY = 0;
         if (gInputEngine.actions[this.controls.up]) {
             this.animate('up');
             position.y -= this.velocity;
+            dirY = -1;
         } else if (gInputEngine.actions[this.controls.down]) {
             this.animate('down');
             position.y += this.velocity;
+            dirY = 1;
         } else if (gInputEngine.actions[this.controls.left]) {
             this.animate('left');
             position.x -= this.velocity;
+            dirX = -1;
         } else if (gInputEngine.actions[this.controls.right]) {
             this.animate('right');
             position.x += this.velocity;
+            dirX = 1;
         } else {
             this.animate('idle');
         }
 
         if (position.x != this.bmp.x || position.y != this.bmp.y) {
-            if (!this.detectWallCollision(position) && !this.detectBombCollision(position)) {
-                this.bmp.x = position.x;
-                this.bmp.y = position.y;
-                this.updatePosition();
+            if (!this.detectBombCollision(position)) {
+                if (this.detectWallCollision(position)) {
+                    // If we are on the corner, move to the aisle
+                    var target = { x: this.position.x + dirX, y: this.position.y + dirY };
+                    var cornerFix = this.getCornerFix(target);
+                    if (cornerFix) {
+                        var fixX = 0;
+                        var fixY = 0;
+                        if (dirX) {
+                            fixY = (cornerFix.y - this.bmp.y) > 0 ? 1 : -1;
+                        } else {
+                            fixX = (cornerFix.x - this.bmp.x) > 0 ? 1 : -1;
+                        }
+                        this.bmp.x += fixX * this.velocity;
+                        this.bmp.y += fixY * this.velocity;
+                        this.updatePosition();
+                    }
+                } else {
+                    this.bmp.x = position.x;
+                    this.bmp.y = position.y;
+                    this.updatePosition();
+                }
             }
         }
 
@@ -154,6 +178,16 @@ Player = Entity.extend({
         }
 
         this.handleBonusCollision();
+    },
+
+    /**
+     * Checks whether we are on corner to target position.
+     * Returns position where we should move before we can go to target.
+     */
+    getCornerFix: function(target) {
+        if (gGameEngine.getTileMaterial(target) == 'grass') {
+            return Utils.convertToBitmapPosition(this.position);
+        }
     },
 
     /**
