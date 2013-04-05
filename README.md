@@ -10,8 +10,9 @@ Demo: http://bombergirl.matousskala.cz
 
 Installation
 ------------
-1. Clone this repository: ```git clone git@github.com:MattSkala/html5-bombergirl.git```
-2. Download dependencies via [Bower](https://github.com/twitter/bower): ```bower update```
+1. Clone this repository: ```git clone https://github.com/MattSkala/html5-bombergirl.git```
+2. ```cd html5-bombergirl```
+3. Download dependencies via [Bower](https://github.com/twitter/bower): ```bower install```
 
 Credits
 -------

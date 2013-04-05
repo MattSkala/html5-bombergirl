@@ -3,11 +3,10 @@
   "version": "0.1.0",
   "main": "index.html",
   "dependencies": {
-    "jquery": "~1.8.3",
     "bootstrap": "~2.3.1",
     "PreloadJS": "*",
     "EaselJS": "*",
-    "SoundJS": "*"
+    "SoundJS": "https://github.com/MattSkala/SoundJS.git"
   },
   "ignore": [
     "**/.*",
