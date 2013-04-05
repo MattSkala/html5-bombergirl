@@ -22,7 +22,7 @@ GameEngine = Class.extend({
     fireImg: null,
     bonusesImg: null,
 
-    mute: true,
+    mute: false,
     soundtrackLoaded: false,
     soundtrackPlaying: false,
     soundtrack: null,
@@ -108,7 +108,6 @@ GameEngine = Class.extend({
 
         if (gGameEngine.playersCount > 0) {
             if (this.soundtrackLoaded) {
-                this.mute = false;
                 this.playSoundtrack();
             }
         }
@@ -126,6 +125,7 @@ GameEngine = Class.extend({
     playSoundtrack: function() {
         if (!gGameEngine.soundtrackPlaying) {
             gGameEngine.soundtrack = createjs.Sound.play("game", "none", 0, 0, -1);
+            gGameEngine.soundtrack.setVolume(0.5);
             gGameEngine.soundtrackPlaying = true;
         }
     },
