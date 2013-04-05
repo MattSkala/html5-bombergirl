@@ -131,8 +131,11 @@ Bot = Player.extend({
             velocity = distanceY;
         }
 
-        this.bmp.x += this.dirX * velocity;
-        this.bmp.y += this.dirY * velocity;
+        var targetPosition = { x: this.bmp.x + this.dirX * velocity, y: this.bmp.y + this.dirY * velocity };
+        if (!this.detectWallCollision(targetPosition)) {
+            this.bmp.x = targetPosition.x;
+            this.bmp.y = targetPosition.y;
+        }
 
         this.updatePosition();
     },

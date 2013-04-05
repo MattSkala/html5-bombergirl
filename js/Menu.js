@@ -154,7 +154,7 @@ Menu = Class.extend({
         gGameEngine.stage.addChild(multiIconGirl);
         this.views.push(multiIconGirl);
 
-        var multiIconBoy = new createjs.Bitmap("img/george.png");
+        var multiIconBoy = new createjs.Bitmap("img/betty2.png");
         multiIconBoy.sourceRect = new createjs.Rectangle(0, 0, 48, 48);
         multiIconBoy.x = multiX + (modeSize - 48) / 2 + 48/2 - 8;
         multiIconBoy.y = iconsY;

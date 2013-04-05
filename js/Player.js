@@ -1,4 +1,6 @@
 Player = Entity.extend({
+    id: 0,
+
     /**
      * Moving speed
      */
@@ -51,11 +53,24 @@ Player = Entity.extend({
 
     deadTimer: 0,
 
-    init: function(position, controls) {
+    init: function(position, controls, id) {
+        if (id) {
+            this.id = id;
+        }
+
         if (controls) {
             this.controls = controls;
         }
-        var img = this instanceof Bot ? gGameEngine.playerBoyImg : gGameEngine.playerGirlImg;
+
+        var img = gGameEngine.playerBoyImg;
+        if (!(this instanceof Bot)) {
+            if (this.id == 0) {
+                img = gGameEngine.playerGirlImg;
+            } else {
+                img = gGameEngine.playerGirl2Img;
+            }
+        }
+
         var spriteSheet = new createjs.SpriteSheet({
             images: [img],
             frames: { width: this.size.w, height: this.size.h, regX: 12, regY: 12 },

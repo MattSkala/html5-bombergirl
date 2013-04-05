@@ -17,6 +17,7 @@ GameEngine = Class.extend({
 
     playerBoyImg: null,
     playerGirlImg: null,
+    playerGirl2Img: null,
     tilesImgs: {},
     bombImg: null,
     fireImg: null,
@@ -45,6 +46,7 @@ GameEngine = Class.extend({
         queue.addEventListener("complete", function() {
             that.playerBoyImg = queue.getResult("playerBoy");
             that.playerGirlImg = queue.getResult("playerGirl");
+            that.playerGirl2Img = queue.getResult("playerGirl2");
             that.tilesImgs.grass = queue.getResult("tile_grass");
             that.tilesImgs.wall = queue.getResult("tile_wall");
             that.tilesImgs.wood = queue.getResult("tile_wood");
@@ -56,6 +58,7 @@ GameEngine = Class.extend({
         queue.loadManifest([
             {id: "playerBoy", src: "img/george.png"},
             {id: "playerGirl", src: "img/betty.png"},
+            {id: "playerGirl2", src: "img/betty2.png"},
             {id: "tile_grass", src: "img/tile_grass.png"},
             {id: "tile_wall", src: "img/tile_wall.png"},
             {id: "tile_wood", src: "img/tile_wood.png"},
@@ -231,7 +234,7 @@ GameEngine = Class.extend({
                 'right': 'right2',
                 'bomb': 'bomb2'
             };
-            var player2 = new Player({ x: this.tilesX - 2, y: this.tilesY - 2 }, controls);
+            var player2 = new Player({ x: this.tilesX - 2, y: this.tilesY - 2 }, controls, 1);
             this.players.push(player2);
         }
     },
