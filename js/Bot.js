@@ -95,8 +95,10 @@ Bot = Player.extend({
             }
         }
         this.targetPosition = this.getRandomTarget(targets);
-        this.loadTargetPosition(this.targetPosition);
-        this.targetBitmapPosition = Utils.convertToBitmapPosition(this.targetPosition);
+        if (this.targetPosition.x) {
+            this.loadTargetPosition(this.targetPosition);
+            this.targetBitmapPosition = Utils.convertToBitmapPosition(this.targetPosition);
+        }
     },
 
     /**
@@ -134,7 +136,7 @@ Bot = Player.extend({
             else if (i == 3) { dirX = 0; dirY = -1; }
 
             var position = { x: this.position.x + dirX, y: this.position.y + dirY };
-            if (gGameEngine.getTileMaterial(position) == 'grass') {
+            if (gGameEngine.getTileMaterial(position) == 'grass' && !this.hasBomb(position)) {
                 targets.push(position);
             }
         }
@@ -147,7 +149,8 @@ Bot = Player.extend({
             }
         }
 
-        return safeTargets.length > 0 ? safeTargets : targets;
+        var isLucky = Math.random() > 0.5;
+        return safeTargets.length > 0 && isLucky ? safeTargets : targets;
     },
 
     /**
@@ -279,5 +282,15 @@ Bot = Player.extend({
             }
         }
         return true;
+    },
+
+    hasBomb: function(position) {
+        for (var i = 0; i < gGameEngine.bombs.length; i++) {
+            var bomb = gGameEngine.bombs[i];
+            if (Utils.comparePositions(bomb.position, position)) {
+                return true;
+            }
+        }
+        return false;
     }
 });
