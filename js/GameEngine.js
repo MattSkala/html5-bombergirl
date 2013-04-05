@@ -64,8 +64,8 @@ GameEngine = Class.extend({
             {id: "bonuses", src: "img/bonuses.png"}
         ]);
 
-        createjs.Sound.registerSound("sound/bomb.mp3", "bomb");
-        createjs.Sound.registerSound("sound/game.mp3", "game");
+        createjs.Sound.registerSound("sound/bomb.mp3|sound/bomb.ogg", "bomb");
+        createjs.Sound.registerSound("sound/game.mp3|sound/game.ogg", "game");
         createjs.Sound.addEventListener("loadComplete", this.onSoundLoaded);
 
         // Create menu
