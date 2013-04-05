@@ -91,23 +91,10 @@ Bomb = Entity.extend({
         for (var i = 0; i < positions.length; i++) {
             var position = positions[i];
             this.fire(position);
-        }
 
-        // Cache tiles
-        var tiles = [];
-        for (var i = 0; i < gGameEngine.tiles.length; i++) {
-            var tile = gGameEngine.tiles[i];
-            tiles.push(tile);
-        }
-
-        // Burn all wood around!
-        for (var i = 0; i < tiles.length; i++) {
-            var tile = tiles[i];
-            if (tile.material == 'wood'
-                && ((tile.position.x == this.position.x - 1 && tile.position.y == this.position.y)
-                    || (tile.position.x == this.position.x + 1 && tile.position.y == this.position.y)
-                    || (tile.position.x == this.position.x && tile.position.y == this.position.y - 1)
-                    || (tile.position.x == this.position.x && tile.position.y == this.position.y + 1) )) {
+            var material = gGameEngine.getTileMaterial(position);
+            if (material == 'wood') {
+                var tile = gGameEngine.getTile(position);
                 tile.remove();
             }
         }
