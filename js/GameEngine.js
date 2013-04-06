@@ -23,6 +23,7 @@ GameEngine = Class.extend({
     fireImg: null,
     bonusesImg: null,
 
+    playing: false,
     mute: false,
     soundtrackLoaded: false,
     soundtrackPlaying: false,
@@ -103,6 +104,12 @@ GameEngine = Class.extend({
             }
         });
 
+        gInputEngine.addListener('escape', function() {
+            if (!gGameEngine.menu.visible) {
+                gGameEngine.menu.show();
+            }
+        });
+
         // Start loop
         if (!createjs.Ticker.hasEventListener('tick')) {
             createjs.Ticker.addEventListener('tick', gGameEngine.update);
@@ -113,6 +120,10 @@ GameEngine = Class.extend({
             if (this.soundtrackLoaded) {
                 this.playSoundtrack();
             }
+        }
+
+        if (!this.playing) {
+            this.menu.show();
         }
     },
 

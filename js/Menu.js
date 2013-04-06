@@ -6,7 +6,6 @@ Menu = Class.extend({
     init: function() {
         gGameEngine.botsCount = 4;
         gGameEngine.playersCount = 0;
-        this.show();
     },
 
     show: function(text) {
@@ -53,6 +52,7 @@ Menu = Class.extend({
             gGameEngine.playersCount = 2;
         }
 
+        gGameEngine.playing = true;
         gGameEngine.restart();
     },
 

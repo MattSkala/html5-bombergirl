@@ -31,6 +31,7 @@ InputEngine = Class.extend({
         this.bind(16, 'bomb2');
 
         this.bind(13, 'restart');
+        this.bind(27, 'escape');
         this.bind(77, 'mute');
 
         document.addEventListener('keydown', this.onKeyDown);
