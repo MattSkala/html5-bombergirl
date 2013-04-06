@@ -95,15 +95,19 @@ GameEngine = Class.extend({
         gInputEngine.addListener('mute', this.toggleSound);
 
         // Restart listener
-        gInputEngine.addListener('restart', function() {
-            if (gGameEngine.playersCount == 0) {
-                gGameEngine.menu.setMode('single');
-            } else {
-                gGameEngine.menu.hide();
-                gGameEngine.restart();
-            }
-        });
+        // Timeout because when you press enter in address bar too long, it would not show menu
+        setTimeout(function() {
+            gInputEngine.addListener('restart', function() {
+                if (gGameEngine.playersCount == 0) {
+                    gGameEngine.menu.setMode('single');
+                } else {
+                    gGameEngine.menu.hide();
+                    gGameEngine.restart();
+                }
+            });
+        }, 200);
 
+        // Escape listener
         gInputEngine.addListener('escape', function() {
             if (!gGameEngine.menu.visible) {
                 gGameEngine.menu.show();
