@@ -96,6 +96,15 @@ Bomb = Entity.extend({
             if (material == 'wood') {
                 var tile = gGameEngine.getTile(position);
                 tile.remove();
+            } else if (material == 'grass') {
+                // Explode bombs in fire
+                for (var j = 0; j < gGameEngine.bombs.length; j++) {
+                    var bomb = gGameEngine.bombs[j];
+                    if (!bomb.exploded
+                        && Utils.comparePositions(bomb.position, position)) {
+                        bomb.explode();
+                    }
+                }
             }
         }
 
