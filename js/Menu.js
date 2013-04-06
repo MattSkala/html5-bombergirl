@@ -6,6 +6,8 @@ Menu = Class.extend({
     init: function() {
         gGameEngine.botsCount = 4;
         gGameEngine.playersCount = 0;
+
+        this.showLoader();
     },
 
     show: function(text) {
@@ -160,6 +162,17 @@ Menu = Class.extend({
         multiIconBoy.y = iconsY;
         gGameEngine.stage.addChild(multiIconBoy);
         this.views.push(multiIconBoy);
-    }
+    },
 
+    showLoader: function() {
+        var bgGraphics = new createjs.Graphics().beginFill("#000000").drawRect(0, 0, gGameEngine.size.w, gGameEngine.size.h);
+        var bg = new createjs.Shape(bgGraphics);
+        gGameEngine.stage.addChild(bg);
+
+        var loadingText = new createjs.Text("Loading...", "20px Helvetica", "#FFFFFF");
+        loadingText.x = gGameEngine.size.w / 2 - loadingText.getMeasuredWidth() / 2;
+        loadingText.y = gGameEngine.size.h / 2 - loadingText.getMeasuredHeight() / 2;
+        gGameEngine.stage.addChild(loadingText);
+        gGameEngine.stage.update();
+    }
 });
