@@ -73,7 +73,7 @@ Player = Entity.extend({
 
         var spriteSheet = new createjs.SpriteSheet({
             images: [img],
-            frames: { width: this.size.w, height: this.size.h, regX: 12, regY: 12 },
+            frames: { width: this.size.w, height: this.size.h, regX: 10, regY: 12 },
             animations: {
                 idle: [0, 0, 'idle'],
                 down: [0, 3, 'down', 10],
@@ -166,8 +166,7 @@ Player = Entity.extend({
             if (!this.detectBombCollision(position)) {
                 if (this.detectWallCollision(position)) {
                     // If we are on the corner, move to the aisle
-                    var target = { x: this.position.x + dirX, y: this.position.y + dirY };
-                    var cornerFix = this.getCornerFix(target);
+                    var cornerFix = this.getCornerFix(dirX, dirY);
                     if (cornerFix) {
                         var fixX = 0;
                         var fixY = 0;
@@ -199,9 +198,42 @@ Player = Entity.extend({
      * Checks whether we are on corner to target position.
      * Returns position where we should move before we can go to target.
      */
-    getCornerFix: function(target) {
-        if (gGameEngine.getTileMaterial(target) == 'grass') {
-            return Utils.convertToBitmapPosition(this.position);
+    getCornerFix: function(dirX, dirY) {
+        var edgeSize = 30;
+
+        // fix position to where we should go first
+        var position = {};
+
+        // possible fix position we are going to choose from
+        var pos1 = { x: this.position.x + dirY, y: this.position.y + dirX };
+        var bmp1 = Utils.convertToBitmapPosition(pos1);
+
+        var pos2 = { x: this.position.x - dirY, y: this.position.y - dirX };
+        var bmp2 = Utils.convertToBitmapPosition(pos2);
+
+        // in front of current position
+        if (gGameEngine.getTileMaterial({ x: this.position.x + dirX, y: this.position.y + dirY }) == 'grass') {
+            position = this.position;
+        }
+        // right bottom
+        // left top
+        else if (gGameEngine.getTileMaterial(pos1) == 'grass'
+            && Math.abs(this.bmp.y - bmp1.y) < edgeSize && Math.abs(this.bmp.x - bmp1.x) < edgeSize) {
+            if (gGameEngine.getTileMaterial({ x: pos1.x + dirX, y: pos1.y + dirY }) == 'grass') {
+                position = pos1;
+            }
+        }
+        // right top
+        // left bottom
+        else if (gGameEngine.getTileMaterial(pos2) == 'grass'
+            && Math.abs(this.bmp.y - bmp2.y) < edgeSize && Math.abs(this.bmp.x - bmp2.x) < edgeSize) {
+            if (gGameEngine.getTileMaterial({ x: pos2.x + dirX, y: pos2.y + dirY }) == 'grass') {
+                position = pos2;
+            }
+        }
+
+        if (position.x &&  gGameEngine.getTileMaterial(position) == 'grass') {
+            return Utils.convertToBitmapPosition(position);
         }
     },
 
