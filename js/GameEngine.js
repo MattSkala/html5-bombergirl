@@ -6,7 +6,7 @@ GameEngine = Class.extend({
     fps: 50,
     botsCount: 2, /* 0 - 3 */
     playersCount: 2, /* 1 - 2 */
-    bonusesPercent: 15,
+    bonusesPercent: 16,
 
     stage: null,
     menu: null,
