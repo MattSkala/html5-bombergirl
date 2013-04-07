@@ -5,9 +5,7 @@ Bonus = Entity.extend({
     position: {},
     bmp: null,
 
-    init: function(position) {
-        // Get random type
-        var typePosition = Math.floor(Math.random() * this.types.length);
+    init: function(position, typePosition) {
         this.type = this.types[typePosition];
 
         this.position = position;

@@ -6,6 +6,7 @@ GameEngine = Class.extend({
     fps: 50,
     botsCount: 2, /* 0 - 3 */
     playersCount: 2, /* 1 - 2 */
+    bonusesPercent: 15,
 
     stage: null,
     menu: null,
@@ -87,6 +88,7 @@ GameEngine = Class.extend({
 
         // Draw tiles
         this.drawTiles();
+        this.drawBonuses();
 
         this.spawnBots();
         this.spawnPlayers();
@@ -194,16 +196,53 @@ GameEngine = Class.extend({
                         && !(i <= 2 && j >= this.tilesX - 3)
                         && !(i >= this.tilesY - 3 && j <= 2)) {
 
-                        // Bonus
-                        if (Math.random() < 0.15) {
-                            var bonus = new Bonus({ x: j, y: i });
-                            this.bonuses.push(bonus);
-                        }
-
                         var wood = new Tile('wood', { x: j, y: i });
                         this.stage.addChild(wood.bmp);
                         this.tiles.push(wood);
                     }
+                }
+            }
+        }
+    },
+
+    drawBonuses: function() {
+        // Cache woods tiles
+        var woods = [];
+        for (var i = 0; i < this.tiles.length; i++) {
+            var tile = this.tiles[i];
+            if (tile.material == 'wood') {
+                woods.push(tile);
+            }
+        }
+
+        // Sort tiles randomly
+        woods.sort(function() {
+            return 0.5 - Math.random();
+        });
+
+        // Distribute bonuses to quarters of map precisely fairly
+        for (var j = 0; j < 4; j++) {
+            var bonusesCount = Math.round(woods.length * this.bonusesPercent * 0.01 / 4);
+            var placedCount = 0;
+            for (var i = 0; i < woods.length; i++) {
+                if (placedCount > bonusesCount) {
+                    break;
+                }
+
+                var tile = woods[i];
+                if ((j == 0 && tile.position.x < this.tilesX / 2 && tile.position.y < this.tilesY / 2)
+                    || (j == 1 && tile.position.x < this.tilesX / 2 && tile.position.y > this.tilesY / 2)
+                    || (j == 2 && tile.position.x > this.tilesX / 2 && tile.position.y < this.tilesX / 2)
+                    || (j == 3 && tile.position.x > this.tilesX / 2 && tile.position.y > this.tilesX / 2)) {
+
+                    var typePosition = placedCount % 3;
+                    var bonus = new Bonus(tile.position, typePosition);
+                    this.bonuses.push(bonus);
+
+                    // Move wood to front
+                    this.moveToFront(tile.bmp);
+
+                    placedCount++;
                 }
             }
         }
