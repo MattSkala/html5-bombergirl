@@ -19,7 +19,7 @@ Installation
 
 License
 -------
-The game soundtrack is composed by me. Characters sprite sheets are from OpenGameArt. The whole game is licensed under Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
+The game soundtrack (composed by me) and the source code is licensed under Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
 ![CC BY-NC-SA](http://i.creativecommons.org/l/by-nc-sa/3.0/80x15.png)
 
 Credits
