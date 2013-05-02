@@ -38,3 +38,16 @@ h1 {
 h1 strong {
     color: #FF4444;
 }
+
+.credits {
+    color: gray;
+}
+
+.credits a {
+    color: gray;
+    text-decoration: underline;
+}
+
+.credits a:hover {
+    color: black;
+}
