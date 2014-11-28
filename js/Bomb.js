@@ -43,9 +43,14 @@ Bomb = Entity.extend({
 
         var spriteSheet = new createjs.SpriteSheet({
             images: [gGameEngine.bombImg],
-            frames: { width: this.size.w, height: this.size.h, regX: 5, regY: 5 },
+            frames: {
+                width: this.size.w,
+                height: this.size.h,
+                regX: 5,
+                regY: 5
+            },
             animations: {
-                idle: [0, 4, null, 10],
+                idle: [0, 4, "idle", 0.2]
             }
         });
         this.bmp = new createjs.Sprite(spriteSheet);

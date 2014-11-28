@@ -135,7 +135,6 @@ GameEngine = Class.extend({
     },
 
     onSoundLoaded: function(sound) {
-        console.log('onSoundLoaded', sound);
         if (sound.id == 'game') {
             gGameEngine.soundtrackLoaded = true;
             if (gGameEngine.playersCount > 0) {

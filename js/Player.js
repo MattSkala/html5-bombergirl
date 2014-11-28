@@ -76,11 +76,11 @@ Player = Entity.extend({
             frames: { width: this.size.w, height: this.size.h, regX: 10, regY: 12 },
             animations: {
                 idle: [0, 0, 'idle'],
-                down: [0, 3, 'down', 10],
-                left: [4, 7, 'left', 10],
-                up: [8, 11, 'up', 10],
-                right: [12, 15, 'right', 10],
-                dead: [16, 16, 'dead', 10]
+                down: [0, 3, 'down', 0.1],
+                left: [4, 7, 'left', 0.1],
+                up: [8, 11, 'up', 0.1],
+                right: [12, 15, 'right', 0.1],
+                dead: [16, 16, 'dead', 0.1]
             }
         });
         this.bmp = new createjs.Sprite(spriteSheet);
