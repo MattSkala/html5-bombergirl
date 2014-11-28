@@ -69,9 +69,10 @@ GameEngine = Class.extend({
             {id: "bonuses", src: "img/bonuses.png"}
         ]);
 
-        createjs.Sound.registerSound("sound/bomb.mp3|sound/bomb.ogg", "bomb");
-        createjs.Sound.registerSound("sound/game.mp3|sound/game.ogg", "game");
-        createjs.Sound.addEventListener("loadComplete", this.onSoundLoaded);
+        createjs.Sound.addEventListener("fileload", this.onSoundLoaded);
+        createjs.Sound.alternateExtensions = ["mp3"];
+        createjs.Sound.registerSound("sound/bomb.ogg", "bomb");
+        createjs.Sound.registerSound("sound/game.ogg", "game");
 
         // Create menu
         this.menu = new Menu();
@@ -134,6 +135,7 @@ GameEngine = Class.extend({
     },
 
     onSoundLoaded: function(sound) {
+        console.log('onSoundLoaded', sound);
         if (sound.id == 'game') {
             gGameEngine.soundtrackLoaded = true;
             if (gGameEngine.playersCount > 0) {

@@ -48,7 +48,7 @@ Bomb = Entity.extend({
                 idle: [0, 4, null, 10],
             }
         });
-        this.bmp = new createjs.BitmapAnimation(spriteSheet);
+        this.bmp = new createjs.Sprite(spriteSheet);
         this.bmp.gotoAndPlay('idle');
 
         this.position = position;

@@ -32,7 +32,7 @@ Fire = Entity.extend({
                 idle: [0, 5, null, 4],
             }
         });
-        this.bmp = new createjs.BitmapAnimation(spriteSheet);
+        this.bmp = new createjs.Sprite(spriteSheet);
         this.bmp.gotoAndPlay('idle');
         var that = this;
         this.bmp.addEventListener('animationend', function() {

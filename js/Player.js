@@ -83,7 +83,7 @@ Player = Entity.extend({
                 dead: [16, 16, 'dead', 10]
             }
         });
-        this.bmp = new createjs.BitmapAnimation(spriteSheet);
+        this.bmp = new createjs.Sprite(spriteSheet);
 
         this.position = position;
         var pixels = Utils.convertToBitmapPosition(position);
@@ -115,7 +115,7 @@ Player = Entity.extend({
                         unexplodedBombs++;
                     }
                 }
-            console.log(unexplodedBombs + ' < ' + that.bombsMax);
+
                 if (unexplodedBombs < that.bombsMax) {
                     var bomb = new Bomb(that.position, that.bombStrength);
                     gGameEngine.stage.addChild(bomb.bmp);
