@@ -179,14 +179,26 @@ GameEngine = Class.extend({
 
     getCurrentGameState: function() {
         return {
-            bot_grid_positions: [],
-            wall_grid_positions: this.getTilePositions('wall'),
-            wood_grid_positions: this.getTilePositions('wood'),
-            bomb_grid_positions: []       
+            bot_grid_positions: this._getBotPositions(),
+            wall_grid_positions: this._getTilePositions('wall'),
+            wood_grid_positions: this._getTilePositions('wood'),
+            bomb_grid_positions: this._getBompPositions()      
         }       
     },
 
-    getTilePositions: function(tileType) {
+    _getBompPositions: function() {
+        return _.map(this.bombs, function(bomb) {
+            return bomb.position;           
+        }); 
+    },
+
+    _getBotPositions: function() {
+        return _.map(this.bots, function(bot) {
+            return bot.position;           
+        });            
+    },
+
+    _getTilePositions: function(tileType) {
         return _.filter(this.tiles, function(title) {
             return title.material === tileType;
         });        
