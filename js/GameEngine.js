@@ -177,6 +177,21 @@ GameEngine = Class.extend({
         gGameEngine.stage.update();
     },
 
+    getCurrentGameState: function() {
+        return {
+            bot_grid_positions: [],
+            wall_grid_positions: this.getTilePositions('wall'),
+            wood_grid_positions: this.getTilePositions('wood'),
+            bomb_grid_positions: []       
+        }       
+    },
+
+    getTilePositions: function(tileType) {
+        return _.filter(this.tiles, function(title) {
+            return title.material === tileType;
+        });        
+    },
+
     drawTiles: function() {
         for (var i = 0; i < this.tilesY; i++) {
             for (var j = 0; j < this.tilesX; j++) {
