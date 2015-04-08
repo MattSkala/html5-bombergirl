@@ -177,6 +177,10 @@ GameEngine = Class.extend({
         gGameEngine.stage.update();
     },
 
+    getPossibleStates: function(state, action) {
+
+    },
+
     getCurrentGameState: function() {
         return {
             bot_grid_positions: this._getBotPositions(),
@@ -338,6 +342,15 @@ GameEngine = Class.extend({
                 return tile;
             }
         }
+    },
+
+    /**
+     * Returns bomb at given position.
+     */
+    getBomb: function(position) {
+        return _.find(this.bombs, function(bomb) {
+            return bomb.position.x == position.x && bomb.position.y == position.y
+        });
     },
 
     /**

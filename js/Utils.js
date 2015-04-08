@@ -39,3 +39,26 @@ Utils.removeFromArray = function(array, item) {
     }
     return array;
 };
+
+Utils.nextPositionAfterAction = function(action, currentPosition) {
+    var x = currentPosition.x, y = currentPosition.y;
+    switch(action) {
+        case 'up':
+            y -=1;
+            break;
+        case 'down':
+            y += 1;
+            break;
+        case 'left':
+            x -= 1;
+            break;
+        case 'right':
+            x += 1;
+            break;
+        case 'bomb':
+            break;        
+        default:
+            console.log('Shoud not be here');
+    }
+    return { x: x, y: y }    
+};

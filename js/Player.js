@@ -109,14 +109,8 @@ Player = Entity.extend({
                     }
                 }
 
-                var unexplodedBombs = 0;
-                for (var i = 0; i < that.bombs.length; i++) {
-                    if (!that.bombs[i].exploded) {
-                        unexplodedBombs++;
-                    }
-                }
-
-                if (unexplodedBombs < that.bombsMax) {
+                
+                if (that._has_extra_bomb()) {
                     var bomb = new Bomb(that.position, that.bombStrength);
                     gGameEngine.stage.addChild(bomb.bmp);
                     that.bombs.push(bomb);
@@ -128,6 +122,17 @@ Player = Entity.extend({
                 }
             });
         }
+    },
+
+    _has_extra_bomb: function() {
+        var unexplodedBombs = 0;
+        var numBomb = this.bombs.length
+        for (var i = 0; i < numBomb; i++) {
+            if (!this.bombs[i].exploded) {
+                unexplodedBombs++;
+            }
+        }
+        return unexplodedBombs < this.bombsMax;    
     },
 
     update: function() {
@@ -192,6 +197,25 @@ Player = Entity.extend({
         }
 
         this.handleBonusCollision();
+        console.log(this.getPossibleActions());
+    },
+
+    // return a sub-set of this.controls.keys 
+    getPossibleActions: function() {
+        var that = this;
+        return _.filter(Object.keys(this.controls), function(action) {
+            return that._doable_action(action);        
+        })
+    },
+
+    _doable_action: function(action) {
+        var currentGameState = gGameEngine.getCurrentGameState();        
+        var nextPosition = Utils.nextPositionAfterAction(action, this.position);
+        if(action === 'bomb' && ! this._has_extra_bomb()) {
+            return false;        
+        } 
+        
+        return gGameEngine.getTileMaterial(nextPosition) === 'grass' && !gGameEngine.getBomb(nextPosition);
     },
 
     /**
