@@ -69,10 +69,10 @@ GameEngine = Class.extend({
             {id: "bonuses", src: "img/bonuses.png"}
         ]);
 
-        createjs.Sound.addEventListener("fileload", this.onSoundLoaded);
-        createjs.Sound.alternateExtensions = ["mp3"];
-        createjs.Sound.registerSound("sound/bomb.ogg", "bomb");
-        createjs.Sound.registerSound("sound/game.ogg", "game");
+        // createjs.Sound.addEventListener("fileload", this.onSoundLoaded);
+        // createjs.Sound.alternateExtensions = ["mp3"];
+        // createjs.Sound.registerSound("sound/bomb.ogg", "bomb");
+        // createjs.Sound.registerSound("sound/game.ogg", "game");
 
         // Create menu
         this.menu = new Menu();
@@ -175,6 +175,39 @@ GameEngine = Class.extend({
 
         // Stage
         gGameEngine.stage.update();
+    },
+
+    getPossibleStates: function(state, bot, action) {
+
+    },
+
+    getCurrentGameState: function() {
+        return new GameState(this._getBotStates(), this._getTiles('wood'),  this._getTiles('wall'), this._getBombStates());   
+    },
+
+    _getBombStates: function() {
+        return _.map(this.bombs, function(bomb) {
+            return { position: bomb.position, timeToExplosion: bomb.timer };
+        }); 
+    },
+
+    _getTiles: function(tileType) {
+        return _.chain(this.tiles).filter(function(tile) { return tile.material === tileType }).map(function(tile) {
+            return { position: tile.position, material: tile.material }; 
+        });         
+    },
+
+    _getBotStates: function() {
+        var that = this; 
+        return _.map(this.bots, function(bot) {
+            return that._extractBotState(bot);
+        }).concat(_.map(this.players, function(player) {
+            return that._extractBotState(player);
+        }));            
+    },
+
+    _extractBotState: function(bot) {
+        return { id: bot.id, avaiableBombs: bot.bombsMax, position: bot.position, alive: bot.alive };
     },
 
     drawTiles: function() {
@@ -289,7 +322,7 @@ GameEngine = Class.extend({
                 'right': 'right2',
                 'bomb': 'bomb2'
             };
-            var player2 = new Player({ x: this.tilesX - 2, y: this.tilesY - 2 }, controls, 1);
+            var player2 = new Player({ x: this.tilesX - 2, y: this.tilesY - 2 }, controls);
             this.players.push(player2);
         }
     },
@@ -311,6 +344,15 @@ GameEngine = Class.extend({
                 return tile;
             }
         }
+    },
+
+    /**
+     * Returns bomb at given position.
+     */
+    getBomb: function(position) {
+        return _.find(this.bombs, function(bomb) {
+            return bomb.position.x == position.x && bomb.position.y == position.y
+        });
     },
 
     /**
