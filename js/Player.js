@@ -1,3 +1,4 @@
+id = 0;
 Player = Entity.extend({
     id: 0,
 
@@ -53,10 +54,9 @@ Player = Entity.extend({
 
     deadTimer: 0,
 
-    init: function(position, controls, id) {
-        if (id) {
-            this.id = id;
-        }
+    init: function(position, controls) {
+        this.id = id;
+        id++;
 
         if (controls) {
             this.controls = controls;
@@ -197,25 +197,8 @@ Player = Entity.extend({
         }
 
         this.handleBonusCollision();
-        console.log(this.getPossibleActions());
-    },
-
-    // return a sub-set of this.controls.keys 
-    getPossibleActions: function() {
-        var that = this;
-        return _.filter(Object.keys(this.controls), function(action) {
-            return that._doable_action(action);        
-        })
-    },
-
-    _doable_action: function(action) {
-        var currentGameState = gGameEngine.getCurrentGameState();        
-        var nextPosition = Utils.nextPositionAfterAction(action, this.position);
-        if(action === 'bomb' && ! this._has_extra_bomb()) {
-            return false;        
-        } 
-        
-        return gGameEngine.getTileMaterial(nextPosition) === 'grass' && !gGameEngine.getBomb(nextPosition);
+        console.log(gGameEngine.getCurrentGameState());
+        console.log(gGameEngine.getCurrentGameState().getPossibleActionsForBot(this.id));
     },
 
     /**
