@@ -32,6 +32,9 @@ Bomb = Entity.extend({
      */
     timerMax: 2,
 
+    // Amount of ticks before a bomb explodes, roughly 2 seconds
+    fuseLength: 100,
+
     exploded: false,
 
     fires: [],
@@ -78,8 +81,9 @@ Bomb = Entity.extend({
         if (this.exploded) { return; }
 
         this.timer++;
-        if (this.timer > this.timerMax * createjs.Ticker.getMeasuredFPS()) {
+        if (this.timer >= this.fuseLength) {
             this.explode();
+            this.timer = 0;
         }
     },
 
