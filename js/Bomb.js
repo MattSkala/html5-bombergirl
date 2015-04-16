@@ -83,7 +83,6 @@ Bomb = Entity.extend({
         this.timer++;
         if (this.timer >= this.fuseLength) {
             this.explode();
-            this.timer = 0;
         }
     },
 
