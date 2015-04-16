@@ -22,7 +22,8 @@
 GameState = Class.extend({
   POSSIBLE_ACTIONS: ['up', 'down', 'left', 'right', 'bomb'],
   bots: [],
-  tiles: [],
+  wood_tiles: [],
+  wall_tiles: [],
   bombs: [],
 
   init: function(bots, wood_tiles, wall_tiles, bombs) {
@@ -49,7 +50,7 @@ GameState = Class.extend({
 
     var nextPosition = Utils.nextPositionAfterAction(action, botState.position);
     if(action === 'bomb' && botState.avaiableBombs <= 0) {
-        return false;        
+      return false;        
     } 
 
     return this._isGrassPosition(nextPosition) && !this._isBombPosition(nextPosition);
@@ -62,14 +63,12 @@ GameState = Class.extend({
   },
 
   _isGrassPosition: function(position) {
-    var that = this;
-
-    var isWoodTile = _.any(this.tiles, function(tile) {
-      return that.wood_tiles.position.x === position.x && that.wood_tiles.position.y === position.y;    
+    var isWoodTile = _.any(this.wood_tiles, function(tile) {
+      return tile.position.x === position.x && tile.position.y === position.y;    
     });
 
-    var isWallTile = _.any(this.tiles, function(tile) {
-      return that.wall_tiles.position.x === position.x && that.wall_tiles.position.y === position.y;    
+    var isWallTile = _.any(this.wall_tiles, function(tile) {
+      return tile.position.x === position.x && tile.position.y === position.y;    
     });
 
     return !isWoodTile && !isWallTile;

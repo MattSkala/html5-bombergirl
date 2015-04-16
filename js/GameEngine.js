@@ -194,7 +194,7 @@ GameEngine = Class.extend({
     _getTiles: function(tileType) {
         return _.chain(this.tiles).filter(function(tile) { return tile.material === tileType }).map(function(tile) {
             return { position: tile.position, material: tile.material }; 
-        });         
+        }).value();         
     },
 
     _getBotStates: function() {
@@ -207,7 +207,7 @@ GameEngine = Class.extend({
     },
 
     _extractBotState: function(bot) {
-        return { id: bot.id, avaiableBombs: bot.bombsMax, position: bot.position, alive: bot.alive };
+        return { id: bot.id, avaiableBombs: bot.avaiable_bombs(), position: bot.position, alive: bot.alive };
     },
 
     drawTiles: function() {

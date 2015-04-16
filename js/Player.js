@@ -124,15 +124,19 @@ Player = Entity.extend({
         }
     },
 
-    _has_extra_bomb: function() {
+    avaiable_bombs: function() {
         var unexplodedBombs = 0;
-        var numBomb = this.bombs.length
+        var numBomb = this.bombs.length;
         for (var i = 0; i < numBomb; i++) {
             if (!this.bombs[i].exploded) {
                 unexplodedBombs++;
             }
-        }
-        return unexplodedBombs < this.bombsMax;    
+        }    
+        return this.bombsMax - unexplodedBombs;    
+    },
+
+    _has_extra_bomb: function() {        
+        return this.avaiable_bombs() > 0;    
     },
 
     update: function() {
@@ -197,8 +201,12 @@ Player = Entity.extend({
         }
 
         this.handleBonusCollision();
-        console.log(gGameEngine.getCurrentGameState());
-        console.log(gGameEngine.getCurrentGameState().getPossibleActionsForBot(this.id));
+        //console.log(gGameEngine.getCurrentGameState());
+        if (_.random(0, 100) % 3 === 0) {
+            console.log(this._has_extra_bomb());
+            console.log(this.avaiable_bombs());
+            console.log(gGameEngine.getCurrentGameState().getPossibleActionsForBot(this.id));
+        }
     },
 
     /**
