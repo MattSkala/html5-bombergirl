@@ -13,6 +13,7 @@ GameEngine = Class.extend({
     players: [],
     bots: [],
     tiles: [],
+    wallTiles: null,
     bombs: [],
     bonuses: [],
 
@@ -177,24 +178,44 @@ GameEngine = Class.extend({
         gGameEngine.stage.update();
     },
 
-    getPossibleStates: function(state, bot, action) {
-
-    },
-
     getCurrentGameState: function() {
         return new GameState(this._getBotStates(), this._getTiles('wood'),  this._getTiles('wall'), this._getBombStates());   
     },
 
     _getBombStates: function() {
-        return _.map(this.bombs, function(bomb) {
-            return { position: bomb.position, timeToExplosion: bomb.timer };
-        }); 
+        var that = this;
+        return _.map(this.bombs, function(bomb) {   
+            return { 
+                position: bomb.position, 
+                strength: bomb.strength, 
+                timer: bomb.timer, 
+                timerMax: bomb.timerMax,
+                exploded: bomb.exploded,
+                fires: that._getFireStates(bomb)
+            }    
+        });             
+    },
+
+    _getFireStates: function(bomb) {
+        return _.map(bomb.fires, function(fire) {           
+            return { position: fire.position };      
+        });
     },
 
     _getTiles: function(tileType) {
-        return _.chain(this.tiles).filter(function(tile) { return tile.material === tileType }).map(function(tile) {
-            return { position: tile.position, material: tile.material }; 
-        }).value();         
+        if(tileType === 'wall' && this.wallTiles) {
+            return this.wallTiles;           
+        }
+
+        tiles = _.chain(this.tiles).filter(function(tile) { return tile.material === tileType }).map(function(tile) {
+            return { position: tile.position }; 
+        }).value(); 
+
+        if(tileType === 'wall') {
+            this.wallTiles = tiles;    
+        }     
+
+        return tiles;        
     },
 
     _getBotStates: function() {

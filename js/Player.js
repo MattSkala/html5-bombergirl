@@ -203,8 +203,7 @@ Player = Entity.extend({
         this.handleBonusCollision();
         //console.log(gGameEngine.getCurrentGameState());
         if (_.random(0, 100) % 3 === 0) {
-            console.log(this._has_extra_bomb());
-            console.log(this.avaiable_bombs());
+            console.log(gGameEngine.getCurrentGameState());
             console.log(gGameEngine.getCurrentGameState().getPossibleActionsForBot(this.id));
         }
     },
