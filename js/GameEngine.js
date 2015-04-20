@@ -207,7 +207,7 @@ GameEngine = Class.extend({
             return this.wallTiles;           
         }
 
-        tiles = _.chain(this.tiles).filter(function(tile) { return tile.material === tileType }).map(function(tile) {
+        tiles = _.chain(this.tiles).filter(function(tile) { return tile.material === tileType; }).map(function(tile) {
             return { position: tile.position }; 
         }).value(); 
 

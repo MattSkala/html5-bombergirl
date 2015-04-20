@@ -37,9 +37,19 @@ GameState = Class.extend({
 
   init: function(bots, wood_tiles, wall_tiles, bombs) {
     this.bots = bots;
-    this.wood_tiles = wood_tiles;
-    this.wall_tiles = wall_tiles;
+    this.wood_tiles = this._buildPositionToMaterialHash(wood_tiles, 'wood');
+    this.wall_tiles = this._buildPositionToMaterialHash(wall_tiles, 'wall');;
     this.bombs = bombs;
+  },
+
+  _buildPositionToMaterialHash: function(tiles, type) {
+    var hash = {};
+    
+    _.each(tiles, function(tile) {
+      hash[tile.poisition] = type;    
+    });
+
+    return hash;
   },
 
   // asumption: the given action is possible/executable 
@@ -47,6 +57,7 @@ GameState = Class.extend({
     // apply the action => get ghost new state  { id: 1, avaiableBombs: ?, position: ?, alive: ? }
     var botState = this._getBotStateCopy(bot_id);
     var nextPosition;
+    var newBombs;
 
     if (!botState.alive) {
       console.log('trying to generate successor state when bot is dead');
@@ -62,17 +73,85 @@ GameState = Class.extend({
     // is next poisition gonna make the boss killed 
     botState.alive = !isFireCollision(nextPosition);
 
-    // increment bombs' timers + check if any bomb explode ??
-    exploded_bombs = _.each(this.bombs, function(bomb) {
+    // increment bombs' timers + check if any bomb explode ?? 
+    // + other bombs affected ?? + wood walls affected ??
+    newBombs = _.chain(this.bombs).filter(function(bomb) { 
+      return !bomb.exploded;
+    }).map(function(bomb) {   
+      return { 
+                position: bomb.position, 
+                strength: bomb.strength, 
+                timer: bomb.timer + 1, 
+                timerMax: bomb.timerMax,
+                exploded: bomb.exploded,
+                fires: []
+              };
+    }).value();
 
+    _.each(newBombs, function(bomb) {
+     if (bomb.timer > bomb.timerMax * createjs.Ticker.getMeasuredFPS()) {
+        this._explode(bomb);
+      }     
     });
-    
     
         
     
     // does the bomb kill the bot ??  
 
     // any wall got freed up ??
+  },
+
+  _explode: function(bomb) {
+    bomb.exploded = true;    
+    var positions = this._getDangerPositions(bomb);
+    _.each(positions, function(position) {
+      bomb.fires.push(position);
+    });
+  },
+
+  _getDangerPositions: function(bomb) {
+    var positions = [];
+    positions.push(bomb.position);
+
+    for (var i = 0; i < 4; i++) {
+        var dirX;
+        var dirY;
+        if (i == 0) { dirX = 1; dirY = 0; }
+        else if (i == 1) { dirX = -1; dirY = 0; }
+        else if (i == 2) { dirX = 0; dirY = 1; }
+        else if (i == 3) { dirX = 0; dirY = -1; }
+
+        for (var j = 1; j <= bomb.strength; j++) {
+            var explode = true;
+            var last = false;
+
+            var position = { x: bomb.position.x + j * dirX, y: bomb.position.y + j * dirY };
+
+            var material = this._getTileMaterial(position);
+            if (material === 'wall') { 
+                explode = false;
+                last = true;
+            } else if (material === 'wood') {
+                explode = true;
+                last = true;
+            }
+
+            if (explode) {
+                positions.push(position);
+            }
+
+            if (last) {
+                break;
+            }
+        }
+    }
+
+    return positions;
+  },
+
+  _getTileMaterial: function(position) {
+    var wood = this.wood_tiles[position];
+    return wood ? 'wood' : this.wall_tiles[position];
   },
 
   isFireCollision: function(position) {
