@@ -7,11 +7,15 @@
     "PreloadJS": "*",
     "EaselJS": "*",
     "SoundJS": "*",
-    "underscore": "*"
+    "underscore": "*",
+    "jquery": "~2.1.3"
   },
   "ignore": [
     "**/.*",
     "node_modules",
     "components"
-  ]
+  ],
+  "resolutions": {
+    "jquery": "~2.1.3"
+  }
 }

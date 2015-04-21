@@ -7,6 +7,10 @@
     text-align: center;
 }
 
+#game-options {
+  margin: 20px 0;
+}
+
 .footer .alert {
     text-align: center;
     line-height: 35px;

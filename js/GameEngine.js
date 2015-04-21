@@ -12,6 +12,7 @@ GameEngine = Class.extend({
     menu: null,
     players: [],
     bots: [],
+    botsConfig: [],
     tiles: [],
     bombs: [],
     bonuses: [],
@@ -186,26 +187,26 @@ GameEngine = Class.extend({
             bot_grid_positions: this._getBotPositions(),
             wall_grid_positions: this._getTilePositions('wall'),
             wood_grid_positions: this._getTilePositions('wood'),
-            bomb_grid_positions: this._getBompPositions()      
-        }       
+            bomb_grid_positions: this._getBompPositions()
+        }
     },
 
     _getBompPositions: function() {
         return _.map(this.bombs, function(bomb) {
-            return bomb.position;           
-        }); 
+            return bomb.position;
+        });
     },
 
     _getBotPositions: function() {
         return _.map(this.bots, function(bot) {
-            return bot.position;           
-        });            
+            return bot.position;
+        });
     },
 
     _getTilePositions: function(tileType) {
         return _.filter(this.tiles, function(title) {
             return title.material === tileType;
-        });        
+        });
     },
 
     drawTiles: function() {
