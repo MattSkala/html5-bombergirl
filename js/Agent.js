@@ -16,7 +16,7 @@ Agent = Bot.extend({
     },
 
     pickMove: function(heuristic) {
-        var actions = ["up", "down", "left", "right"]; // REPLACE WITH AN CODE
+        var actions = this.getPossibleActions(); // REPLACE WITH AN CODE
         // console.log(actions);
         var maxMove = "idle"; 
         var maxScore = heuristic("idle");
