@@ -283,19 +283,36 @@ GameEngine = Class.extend({
     spawnBots: function() {
         this.bots = [];
 
+        // Spawns the four agents
         if (this.botsCount >= 1) {
             var bot2 = new Bot({ x: 1, y: this.tilesY - 2 });
             this.bots.push(bot2);
         }
 
         if (this.botsCount >= 2) {
-            var bot3 = new Bot({ x: this.tilesX - 2, y: 1 });
+            var bot3 = new Agent({ x: this.tilesX - 2, y: 1 });
+            bot3.personality = {
+                threatened: {
+                    move: MoveHeuristics.lazy,
+                    bomb: BombHeuristics.passive
+                },
+                walledIn: {
+                    move: MoveHeuristics.lazy,
+                    bomb: BombHeuristics.passive
+                },
+                neutral: {
+                    move: MoveHeuristics.hysterical,
+                    bomb: BombHeuristics.passive
+                }
+            };
             this.bots.push(bot3);
         }
 
         if (this.botsCount >= 3) {
-            var bot = new Bot({ x: this.tilesX - 2, y: this.tilesY - 2 });
+            var bot = new Agent({ x: this.tilesX - 2, y: this.tilesY - 2 });
             this.bots.push(bot);
+            console.log(this.bots);
+            // console.log(jefferson);
         }
 
         if (this.botsCount >= 4) {

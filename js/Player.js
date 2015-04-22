@@ -197,7 +197,6 @@ Player = Entity.extend({
         }
 
         this.handleBonusCollision();
-        console.log(this.getPossibleActions());
     },
 
     // return a sub-set of this.controls.keys 

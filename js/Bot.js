@@ -94,9 +94,9 @@ Bot = Player.extend({
      * Finds the next tile position where we should move.
      */
     findTargetPosition: function() {
-        var target = { x: this.position.x, y: this.position.y };
-        target.x += this.dirX;
-        target.y += this.dirY;
+        // var target = { x: this.position.x, y: this.position.y };
+        // target.x += this.dirX;
+        // target.y += this.dirY;
 
         var targets = this.getPossibleTargets();
         // Do not go the same way if possible
