@@ -4,16 +4,7 @@
     { id: 1, avaiableBombs: 2, position: { x: 1, y: 2 }, alive: true },
     { id: 2, avaiableBombs: 1, position: { x: 1, y: 2 }, alive: false }
   ],
-  wood_tiles : [
-    { position: { x:1, y:1 } }
-    { position: { x:1, y:2 } }
-    { position: { x:1, y:3 } }
-  ],
-  wall_tiles : [
-    { position: { x:1, y:1 } }
-    { position: { x:1, y:2 } }
-    { position: { x:1, y:3 } }
-  ],
+  tiles : 2 dimenional array,
   bombs: [
     { position: { x:1, y:1 } , 
       strength: 1, 
@@ -31,34 +22,27 @@
 GameState = Class.extend({
   POSSIBLE_ACTIONS: ['up', 'down', 'left', 'right', 'bomb'],
   bots: [],
-  wood_tiles: [],
-  wall_tiles: [],
+  tiles: [],
   bombs: [],
 
-  init: function(bots, wood_tiles, wall_tiles, bombs) {
+  tilesX: 17,
+  tilesY: 13,
+
+  init: function(bots, tiles, bombs) {
     this.bots = bots;
-    this.wood_tiles = this._buildPositionToMaterialHash(wood_tiles, 'wood');
-    this.wall_tiles = this._buildPositionToMaterialHash(wall_tiles, 'wall');;
+    this.tiles = tiles;
     this.bombs = bombs;
-  },
-
-  _buildPositionToMaterialHash: function(tiles, type) {
-    var hash = {};
-    
-    _.each(tiles, function(tile) {
-      hash[tile.poisition] = type;    
-    });
-
-    return hash;
   },
 
   // asumption: the given action is possible/executable 
   generateSuccessor: function(bot_id, action) {
-    // apply the action => get ghost new state  { id: 1, avaiableBombs: ?, position: ?, alive: ? }
-    var botState = this._getBotStateCopy(bot_id);
-    var nextPosition;
+    var newBots;
+    var newTiles;
     var newBombs;
+    var nextPosition;
 
+    // apply the action => get ghost new state  { id: 1, avaiableBombs: ?, position: ?, alive: ? }
+    var botState = this._getBotState(bot_id);
     if (!botState.alive) {
       console.log('trying to generate successor state when bot is dead');
       return;
@@ -66,16 +50,39 @@ GameState = Class.extend({
 
     nextPosition = Utils.nextPositionAfterAction(action, botState.position);
 
-    if (action === 'bomb') {
-      botState.avaiableBombs = botState.avaiableBombs - 1; 
+    newBots = this._getSuccessorBotStates(bot_id, action, nextPosition);
+    newBombs = this._getSuccessorBombStates();
+    newTiles = this._getSuccessorTileStates(newBombs);
+
+    return new GameState(newBots, newTiles, newBombs);
+  },
+
+  _getSuccessorTileStates: function(newBombStates) {
+    var newTileStates= [];
+    for (var j = 0; j < this.tilesX; j++) {
+      newTileStates[j] = [];
+      for (var i = 0; i < this.tilesY; i++) {
+        newTileStates[j][i] = this.tiles[j][i]; 
+      }
     } 
+        
+    // any wall got destroyed
+    _.each(newBombStates, function(bomb) {
+      if (bomb.exploded) {
+        _.each(bomb.fires, function(position) {
+          if (newTileStates[position.x][position.y] === 'wood') {
+            newTileStates[position.x][position.y] = 'grass';
+          }    
+        });         
+      }     
+    });
+    return newTileStates;
+  },
 
-    // is next poisition gonna make the boss killed 
-    botState.alive = !isFireCollision(nextPosition);
-
-    // increment bombs' timers + check if any bomb explode ?? 
-    // + other bombs affected ?? + wood walls affected ??
-    newBombs = _.chain(this.bombs).filter(function(bomb) { 
+  _getSuccessorBombStates: function() {
+    var self = this;
+     // increment bombs' timers + check if any bomb explode + fire them?? 
+    var newBombs = _.chain(this.bombs).filter(function(bomb) { 
       return !bomb.exploded;
     }).map(function(bomb) {   
       return { 
@@ -90,22 +97,45 @@ GameState = Class.extend({
 
     _.each(newBombs, function(bomb) {
      if (bomb.timer > bomb.timerMax * createjs.Ticker.getMeasuredFPS()) {
-        this._explode(bomb);
+        self._explode(bomb);
       }     
     });
-    
-        
-    
-    // does the bomb kill the bot ??  
-
-    // any wall got freed up ??
+    return newBombs;
   },
 
+  _getSuccessorBotStates: function(bot_id, action, nextPosition) {
+    var self = this;
+    return _.map(this.bots, function(bot) {
+      if(bot.id === bot_id) {
+        var newBotState = self._copy_bot_state(bot);
+        if (action === 'bomb') {
+          newBotState.avaiableBombs = newBotState.avaiableBombs - 1; 
+        } 
+        // is next poisition gonna make the boss killed 
+        newBotState.alive = !self.isFireCollision(nextPosition);
+        return newBotState;
+      } else {
+        return self._copy_bot_state(bot);
+      }
+    });
+  },        
+
+  _copy_bot_state: function(bot) {
+    return {
+      id: bot.id,
+      avaiableBombs: bot.avaiableBombs,
+      position: { x: bot.position.x, y: bot.position.y },
+      alive: bot.alive
+    };
+  },
+
+  // explode the bombs and return an arrays of `wood` wall positions got destroyed
+  // explode other bombs in range
   _explode: function(bomb) {
     bomb.exploded = true;    
     var positions = this._getDangerPositions(bomb);
     _.each(positions, function(position) {
-      bomb.fires.push(position);
+      bomb.fires.push(position);      
     });
   },
 
@@ -127,7 +157,7 @@ GameState = Class.extend({
 
             var position = { x: bomb.position.x + j * dirX, y: bomb.position.y + j * dirY };
 
-            var material = this._getTileMaterial(position);
+            var material = this.tiles[position.x][position.y];
             if (material === 'wall') { 
                 explode = false;
                 last = true;
@@ -147,11 +177,6 @@ GameState = Class.extend({
     }
 
     return positions;
-  },
-
-  _getTileMaterial: function(position) {
-    var wood = this.wood_tiles[position];
-    return wood ? 'wood' : this.wall_tiles[position];
   },
 
   isFireCollision: function(position) {
@@ -199,35 +224,12 @@ GameState = Class.extend({
   },
 
   _isGrassPosition: function(position) {
-    var isWoodTile = _.any(this.wood_tiles, function(tile) {
-      return tile.position.x === position.x && tile.position.y === position.y;    
-    });
-
-    var isWallTile = _.any(this.wall_tiles, function(tile) {
-      return tile.position.x === position.x && tile.position.y === position.y;    
-    });
-
-    return !isWoodTile && !isWallTile;
+    return this.tiles[position.x][position.y] === 'grass';
   },
 
   _getBotState: function(bot_id) {
     return _.find(this.bots, function(bot) {
       return bot.id === bot_id;    
     });
-  },
-
-  _getBotStateCopy: function(bot_id) {
-    var botState = _.find(this.bots, function(bot) {
-      return bot.id === bot_id;    
-    });
-
-    var copy = {};
-    copy.id = botState.id;
-    copy.position = {}
-    copy.position.x = botState.position.x;
-    copy.position.y = botState.position.y;
-    copy.avaiableBombs = botState.avaiableBombs;
-    copy.alive = botState.alive;
-    return copy;
   }
 });

@@ -62,3 +62,7 @@ Utils.nextPositionAfterAction = function(action, currentPosition) {
     }
     return { x: x, y: y }    
 };
+
+Utils.copyPosition = function(position) {
+    return { x: position.x, y: position.y };
+};
