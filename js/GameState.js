@@ -42,22 +42,15 @@ GameState = Class.extend({
     this.bombs = bombs;
   },
 
-  _buildPositionToMaterialHash: function(tiles, type) {
-    var hash = {};
-    
-    _.each(tiles, function(tile) {
-      hash[tile.poisition] = type;    
-    });
-
-    return hash;
-  },
-
   // asumption: the given action is possible/executable 
   generateSuccessor: function(bot_id, action) {
     // apply the action => get ghost new state  { id: 1, avaiableBombs: ?, position: ?, alive: ? }
     var botState = this._getBotStateCopy(bot_id);
     var nextPosition;
     var newBombs;
+    var destroyedWallPoistions = [];
+    var newBotStates ;
+    var newWallStates = [];
 
     if (!botState.alive) {
       console.log('trying to generate successor state when bot is dead');
@@ -93,19 +86,46 @@ GameState = Class.extend({
         this._explode(bomb);
       }     
     });
-    
-        
-    
-    // does the bomb kill the bot ??  
+      
+    // any wall got destroyed
+    _.each(newBombs, function(bomb) {
+      if (bomb.exploded) {
+        _.each(bomb.fires, function(fire) {
+          if (this.wall_tiles[fire.position]) {
+            destroyedWallPoistions.push(fire.position);
+          }    
+        });         
+      }     
+    });
 
-    // any wall got freed up ??
+    //TODO: check if boom explode other bombs 
+    newBotStates = _.map(this.bots, function(bot) {
+      if(bot.id === botState.id) {
+        return botState;
+      }  
+      return { 
+        id: bot.id, avaiableBombs: bot.avaiableBombs, 
+        position: bot.position, alive: bot.alive 
+      };
+    })
+
+    _.each(this.wall_tiles.keys(), function(tile) {
+      if(!destroyedWallPoistions.includes(tile.position)) {
+        newWallStates.push({
+          position: Utils.copyPosition(tile.position);
+        });  
+      }  
+    });
+    return new GameState(newBotStates, );
   },
 
+  // explode the bombs and return an arrays of `wood` wall positions got destroyed
+  // explode other bombs in range
   _explode: function(bomb) {
     bomb.exploded = true;    
     var positions = this._getDangerPositions(bomb);
     _.each(positions, function(position) {
-      bomb.fires.push(position);
+      bomb.fires.push(position);      
     });
   },
 

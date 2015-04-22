@@ -218,6 +218,17 @@ GameEngine = Class.extend({
         return tiles;        
     },
 
+
+  _buildPositionToMaterialHash: function(tiles, type) {
+    var hash = {};
+    
+    _.each(tiles, function(tile) {
+      hash[tile.poisition] = type;    
+    });
+
+     return hash;
+   },
+
     _getBotStates: function() {
         var that = this; 
         return _.map(this.bots, function(bot) {
