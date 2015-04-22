@@ -1,5 +1,6 @@
 id = 0;
 Player = Entity.extend({
+
     id: 0,
 
     /**
@@ -201,7 +202,24 @@ Player = Entity.extend({
         }
 
         this.handleBonusCollision();
-        console.log(gGameEngine.getCurrentGameState().generateSuccessor(this.id, 'down'));
+    },
+
+    // return a sub-set of this.controls.keys 
+    getPossibleActions: function() {
+        var that = this;
+        return _.filter(Object.keys(this.controls), function(action) {
+            return that._doable_action(action);        
+        })
+    },
+
+    _doable_action: function(action) {
+        var currentGameState = gGameEngine.getCurrentGameState();        
+        var nextPosition = Utils.nextPositionAfterAction(action, this.position);
+        if(action === 'bomb' && ! this._has_extra_bomb()) {
+            return false;        
+        } 
+        
+        return gGameEngine.getTileMaterial(nextPosition) === 'grass' && !gGameEngine.getBomb(nextPosition);
     },
 
     /**
