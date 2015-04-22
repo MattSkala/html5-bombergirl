@@ -58,7 +58,7 @@ GameState = Class.extend({
   },
 
   _getSuccessorTileStates: function(newBombStates) {
-    var newTileStates;
+    var newTileStates= [];
     for (var j = 0; j < this.tilesX; j++) {
       newTileStates[j] = [];
       for (var i = 0; i < this.tilesY; i++) {
@@ -67,18 +67,20 @@ GameState = Class.extend({
     } 
         
     // any wall got destroyed
-    _.each(newBombs, function(bomb) {
+    _.each(newBombStates, function(bomb) {
       if (bomb.exploded) {
-        _.each(bomb.fires, function(fire) {
-          if (this.newTileStates[fire.position.x][fire.position.y] === 'wood') {
-            this.newTileStates[fire.position.x][fire.position.y] = 'grass';
+        _.each(bomb.fires, function(position) {
+          if (newTileStates[position.x][position.y] === 'wood') {
+            newTileStates[position.x][position.y] = 'grass';
           }    
         });         
       }     
     });
+    return newTileStates;
   },
 
   _getSuccessorBombStates: function() {
+    var self = this;
      // increment bombs' timers + check if any bomb explode + fire them?? 
     var newBombs = _.chain(this.bombs).filter(function(bomb) { 
       return !bomb.exploded;
@@ -95,24 +97,25 @@ GameState = Class.extend({
 
     _.each(newBombs, function(bomb) {
      if (bomb.timer > bomb.timerMax * createjs.Ticker.getMeasuredFPS()) {
-        this._explode(bomb);
+        self._explode(bomb);
       }     
     });
     return newBombs;
   },
 
   _getSuccessorBotStates: function(bot_id, action, nextPosition) {
-    return _map(this.bots, function(bot) {
+    var self = this;
+    return _.map(this.bots, function(bot) {
       if(bot.id === bot_id) {
-        var newBotState = this._copy_bot_state(bot);
+        var newBotState = self._copy_bot_state(bot);
         if (action === 'bomb') {
           newBotState.avaiableBombs = newBotState.avaiableBombs - 1; 
         } 
         // is next poisition gonna make the boss killed 
-        newBotState.alive = !isFireCollision(nextPosition);
+        newBotState.alive = !self.isFireCollision(nextPosition);
         return newBotState;
       } else {
-        return this._copy_bot_state(bot);
+        return self._copy_bot_state(bot);
       }
     });
   },        
