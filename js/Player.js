@@ -1,3 +1,4 @@
+id = 0;
 Player = Entity.extend({
     id: 0,
 
@@ -53,10 +54,9 @@ Player = Entity.extend({
 
     deadTimer: 0,
 
-    init: function(position, controls, id) {
-        if (id) {
-            this.id = id;
-        }
+    init: function(position, controls) {
+        this.id = id;
+        id++;
 
         if (controls) {
             this.controls = controls;
@@ -124,15 +124,19 @@ Player = Entity.extend({
         }
     },
 
-    _has_extra_bomb: function() {
+    avaiable_bombs: function() {
         var unexplodedBombs = 0;
-        var numBomb = this.bombs.length
+        var numBomb = this.bombs.length;
         for (var i = 0; i < numBomb; i++) {
             if (!this.bombs[i].exploded) {
                 unexplodedBombs++;
             }
-        }
-        return unexplodedBombs < this.bombsMax;    
+        }    
+        return this.bombsMax - unexplodedBombs;    
+    },
+
+    _has_extra_bomb: function() {        
+        return this.avaiable_bombs() > 0;    
     },
 
     update: function() {
