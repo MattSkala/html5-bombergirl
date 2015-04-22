@@ -179,7 +179,7 @@ GameEngine = Class.extend({
     },
 
     getCurrentGameState: function() {
-        return new GameState(this._getBotStates(), this._getTiles('wood'),  this._getTiles('wall'), this._getBombStates());   
+        return new GameState(this._getBotStates(), this._getTiles(), this._getBombStates());   
     },
 
     _getBombStates: function() {
@@ -202,18 +202,18 @@ GameEngine = Class.extend({
         });
     },
 
-    _getTiles: function(tileType) {
-        if(tileType === 'wall' && this.wallTiles) {
-            return this.wallTiles;           
+    _getTiles: function() {
+        var tiles = [];
+        for (var j = 0; j < this.tilesX; j++) {
+            tiles[j] = [];
+            for (var i = 0; i < this.tilesY; i++) {
+                tiles[j][i] = 'grass'; 
+            }
         }
 
-        tiles = _.chain(this.tiles).filter(function(tile) { return tile.material === tileType; }).map(function(tile) {
-            return { position: tile.position }; 
-        }).value(); 
-
-        if(tileType === 'wall') {
-            this.wallTiles = tiles;    
-        }     
+        _.each(this.tiles, function(tile) {
+            tiles[tile.position.x][tile.position.y] = tile.material;
+        });   
 
         return tiles;        
     },
