@@ -325,6 +325,7 @@ GameEngine = Class.extend({
 
         if (this.botsCount >= 2) {
             var bot3 = new Agent({ x: this.tilesX - 2, y: 1 });
+            bot3.id = 1;
             bot3.personality = {
                 threatened: {
                     move: MoveHeuristics.lazy,
@@ -344,6 +345,7 @@ GameEngine = Class.extend({
 
         if (this.botsCount >= 3) {
             var bot = new Agent({ x: this.tilesX - 2, y: this.tilesY - 2 });
+            bot.id = 2;
             this.bots.push(bot);
             console.log(this.bots);
             // console.log(jefferson);
@@ -351,6 +353,7 @@ GameEngine = Class.extend({
 
         if (this.botsCount >= 4) {
             var bot = new Bot({ x: 1, y: 1 });
+            bot.id = 3;
             this.bots.push(bot);
         }
     },

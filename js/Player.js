@@ -1,3 +1,4 @@
+id = 0;
 Player = Entity.extend({
 
     id: 0,

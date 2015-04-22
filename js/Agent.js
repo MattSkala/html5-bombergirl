@@ -19,10 +19,11 @@ Agent = Bot.extend({
         var actions = this.getPossibleActions(); // REPLACE WITH AN CODE
         // console.log(actions);
         var maxMove = "idle"; 
-        var maxScore = heuristic("idle");
+        var gs = gGameEngine.getCurrentGameState(this.id);
+        var maxScore = heuristic(gs.generateSuccessor(this.id, "idle"));
         for (var i = actions.length - 1; i >= 0; i--) {
             var act = actions[i];
-            var score = heuristic(act);
+            var score = heuristic(gs.generateSuccessor(this.id, act));
             if (score >= maxScore) {
                 maxScore = score;
                 maxMove = act;

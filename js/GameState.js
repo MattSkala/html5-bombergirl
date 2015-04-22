@@ -27,11 +27,34 @@ GameState = Class.extend({
 
   tilesX: 17,
   tilesY: 13,
+  id:0,
 
-  init: function(bots, tiles, bombs) {
+  init: function(bots, tiles, bombs, id) {
     this.bots = bots;
     this.tiles = tiles;
     this.bombs = bombs;
+    this.id = id;
+  },
+
+  getMe: function() {
+    for (var i = 0; i < this.bots.length; i++) {
+      var bot = this.bots[i];
+      if (bot.id === this.id) {
+        return bot;
+      }
+    }
+    return null;
+  },
+
+  getOthers: function() {
+    var result = [];
+    for (var i = 0; i < this.bots.length; i++) {
+      var bot = this.bots[i];
+      if (bot.id !== this.id) {
+        result.push(bot);
+      }
+    }
+    return result;
   },
 
   // asumption: the given action is possible/executable 
@@ -54,7 +77,7 @@ GameState = Class.extend({
     newBombs = this._getSuccessorBombStates();
     newTiles = this._getSuccessorTileStates(newBombs);
 
-    return new GameState(newBots, newTiles, newBombs);
+    return new GameState(newBots, newTiles, newBombs, bot_id);
   },
 
   _getSuccessorTileStates: function(newBombStates) {
