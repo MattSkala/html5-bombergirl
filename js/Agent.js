@@ -7,11 +7,11 @@ Agent = Bot.extend({
         },
         walledIn: {
             move: MoveHeuristics.lazy,
-            bomb: BombHeuristics.spleunker
+            bomb: BombHeuristics.aggressive
         },
         neutral: {
             move: MoveHeuristics.lazy,
-            bomb: BombHeuristics.passive
+            bomb: BombHeuristics.aggressive
         }
     },
 
@@ -115,7 +115,6 @@ Agent = Bot.extend({
     decideBehavior: function() {
         // Threatened
         if (!this.isSafe(this.position)) {
-            console.log(this);
             return this.personality.threatened;
         }
         // Walled In

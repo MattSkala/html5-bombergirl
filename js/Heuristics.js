@@ -31,6 +31,7 @@ BombHeuristics.pyro = function(state) {
 };
 
 BombHeuristics.aggressive = function(state) {
+    console.log("feojnsdfnsdfdfkls;ofgwjlr");
     var others = state.getOthers();
     for (var i = others.length - 1; i >= 0; i--) {
         var path = state.getPathTo(others[i]);
