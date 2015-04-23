@@ -48,6 +48,7 @@ Agent = Bot.extend({
         }
 
         var position = { x: this.bmp.x, y: this.bmp.y };
+        var pos2 = { x: this.bmp.x, y: this.bmp.y };
 
         // AI
         var currBehavior = this.decideBehavior();
@@ -57,6 +58,7 @@ Agent = Bot.extend({
         // BOMB
         if (this.pickBomb(currBehavior.bomb)) {
             this.plantBomb();
+            return;
         }
 
         // MOVEMENT
@@ -85,7 +87,7 @@ Agent = Bot.extend({
         }
 
         if (position.x != this.bmp.x || position.y != this.bmp.y) {
-            if (!this.detectBombCollision(position)) {
+            if (!this.detectBombCollision(position) || this.detectBombCollision(pos2)) {
                 if (this.detectWallCollision(position)) {
                     // If we are on the corner, move to the aisle
                     var cornerFix = this.getCornerFix(dirX, dirY);

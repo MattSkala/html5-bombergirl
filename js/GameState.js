@@ -57,7 +57,7 @@ GameState = Class.extend({
     return result;
   },
 
-  getPathTo: function (position) {
+  getPathTo: function (bot) {
     var self = this;
     var visited = [];
     for (var i = 0; i < this.tilesX; i++) {
@@ -73,7 +73,7 @@ GameState = Class.extend({
       var path = queue.shift();
       var pos = path[path.length - 1];
 
-      if (this._isBotPosition(pos) && pos.x == position.x && pos.y === position.y)
+      if (this._isBotPosition(pos) && pos.x == bot.position.x && pos.y === bot.position.y)
         return path;
 
       if (visited[pos.x][pos.y])
@@ -81,10 +81,7 @@ GameState = Class.extend({
 
       visited[pos.x][pos.y] = true;
 
-      var positions = _.filter(this._getAdjacentPos(pos), function (p) {
-        return (!self._isWoodPosition(p) && !self._isWallPosition(p));
-      });
-
+      var positions = getAdjacentPos(pos);
       _.each(positions, function (pos) {
         if (!visited[pos.x][pos.y]) {
           queue.push(path.concat([pos]));
@@ -93,50 +90,28 @@ GameState = Class.extend({
     }
 
     return null;
-  },
 
-  _getAdjacentPos: function (pos) {
-    var y = pos.y;
-    var x = pos.x;
+    function getAdjacentPos(pos) {
+      var y = pos.y;
+      var x = pos.x;
 
-    var result = [];
+      var result = [];
 
-    if (x > 0)
-      result.push({x: x - 1, y: y});
-    if (y > 0)
-      result.push({x: x, y: y - 1});
-    if (x < self.tilesX - 1)
-      result.push({x: x + 1, y: y});
-    if (y < self.tilesY - 1)
-      result.push({x: x, y: y + 1});
+      if (x > 0)
+        result.push({x: x - 1, y: y});
+      if (y > 0)
+        result.push({x: x, y: y - 1});
+      if (x < self.tilesX - 1)
+        result.push({x: x + 1, y: y});
+      if (y < self.tilesY - 1)
+        result.push({x: x, y: y + 1});
 
-    return result;
-  },
+      result = _.filter(result, function (p) {
+        return (!self._isWoodPosition(p) && !self._isWallPosition(p));
+      });
 
-  getPathNear: function (position) {
-    var self = this;
-    var positions = _.filter(this._getAdjacentPos(position), function (p) {
-      return self._isGrassPosition(p);
-    });
-
-    var minPath = null;
-
-    _.each(positions, function (p) {
-      var path = self.getPathTo(p);
-      if (!minPath && path.length < minPath.length)
-        minPath = path;
-    });
-
-    return minPath;
-  },
-
-  isDanger: function (position) {
-    var self = this;
-    var positions = this._getAdjacentPos(position);
-
-    return _.every(positions, function (p) {
-      return self._isBombPosition(p) || self._isWoodPosition(p) || self._isWallPosition(p);
-    });
+      return result;
+    }
   },
 
   isSafe: function(position) {
@@ -343,6 +318,25 @@ GameState = Class.extend({
     return false;
   },
 
+  _getAdjacentPos: function (pos) {
+    // debugger
+    var y = pos.y;
+    var x = pos.x;
+
+    var result = [];
+
+    // if (x > 0)
+      result.push({x: x - 1, y: y});
+    // if (y > 0)
+      result.push({x: x, y: y - 1});
+    // if (x < self.tilesX - 1)
+      result.push({x: x + 1, y: y});
+    // if (y < self.tilesY - 1)
+      result.push({x: x, y: y + 1});
+
+    return result;
+  },
+
   // return a sub-set of GameState.POSSIBLE_ACTIONS
   getPossibleActionsForBot: function(bot_id) {
     var that = this;
@@ -383,6 +377,15 @@ GameState = Class.extend({
   _isBotPosition: function(position) {
     return _.any(this.bots, function(bot) {
       return bot.position.x === position.x && bot.position.y === position.y;
+    });
+  },
+
+  isDanger: function (position) {
+    var self = this;
+    var positions = this._getAdjacentPos(position);
+
+    return _.every(positions, function (p) {
+      return self._isBombPosition(p) || self._isWoodPosition(p) || self._isWallPosition(p);
     });
   },
 
