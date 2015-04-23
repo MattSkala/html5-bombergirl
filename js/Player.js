@@ -59,16 +59,22 @@ Player = Entity.extend({
         this.id = id;
         id++;
 
+        var img;
         if (controls) {
             this.controls = controls;
         }
 
-        var img = gGameEngine.playerBoyImg;
-        if (!(this instanceof Bot)) {
-            if (this.id == 0) {
-                img = gGameEngine.playerGirlImg;
+        if (position.x == 1) {
+            if (position.y == 1) {
+                img = gGameEngine.playerBoyImg;
             } else {
-                img = gGameEngine.playerGirl2Img;
+                img = gGameEngine.playerBoyImg2;
+            }
+        } else {
+            if (position.y == 1) {
+                img = gGameEngine.playerBoyImg3;
+            } else {
+                img = gGameEngine.playerBoyImg4;
             }
         }
 

@@ -54,7 +54,15 @@ Menu = Class.extend({
             gGameEngine.playersCount = 2;
         }
 
+        gGameEngine.botsConfig.length = 0;
+
+        $('select.bot-config').each(function () {
+          var value = $(this).val();
+          gGameEngine.botsConfig.push(value);
+        });
+
         gGameEngine.playing = true;
+
         gGameEngine.restart();
     },
 

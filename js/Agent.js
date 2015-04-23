@@ -15,19 +15,18 @@ Agent = Bot.extend({
         }
     },
 
+    facing: "idle",
+
     pickMove: function(heuristic) {
         // var actions = this.getPossibleActions(); // REPLACE WITH AN CODE
         // console.log("start");
         var maxMove = "idle"; 
         var gs = gGameEngine.getCurrentGameState(this.id);
         var actions = gs.getPossibleActionsForBot(this.id);
-        var maxScore = heuristic(gs.generateSuccessor(this.id, "idle")) - 1;
+        var maxScore = heuristic(gs.generateSuccessor(this.id, "idle"));
         // console.log("start");
         for (var i = actions.length - 1; i >= 0; i--) {
-            // console.log(gs.generateSuccessor(this.id, act).getMe().position);
-            // console.log(this.position);
             var act = actions[i];
-            // console.log(act);
             var score = heuristic(gs.generateSuccessor(this.id, act));
             if (score >= maxScore) {
                 maxScore = score;
@@ -54,15 +53,15 @@ Agent = Bot.extend({
         var currBehavior = this.decideBehavior();
 
         // console.log(gGameEngine.getCurrentGameState(this.id));
-
+        var move = "idle";
+        var didBomb = false;
         // BOMB
         if (this.pickBomb(currBehavior.bomb)) {
-            this.plantBomb();
-            return;
+            didBomb = this.plantBomb();
         }
-
         // MOVEMENT
-        var move = this.pickMove(currBehavior.move);
+        if (!didBomb)
+            move = this.pickMove(currBehavior.move);
 
         var dirX = 0;
         var dirY = 0;
@@ -70,20 +69,25 @@ Agent = Bot.extend({
             this.animate('up');
             position.y -= this.velocity;
             dirY = -1;
+            facing = "up";
         } else if (move === 'down') {
             this.animate('down');
             position.y += this.velocity;
             dirY = 1;
+            facing = "down";
         } else if (move === 'left') {
             this.animate('left');
             position.x -= this.velocity;
             dirX = -1;
+            facing = "left";
         } else if (move === 'right') {
             this.animate('right');
             position.x += this.velocity;
             dirX = 1;
+            facing = "right";
         } else {
             this.animate('idle');
+            facing = "idle";
         }
 
         if (position.x != this.bmp.x || position.y != this.bmp.y) {

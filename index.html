@@ -6,6 +6,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
     <meta property="og:image" content="http://matousskala.cz/files/bomberman_screen.png" />
 
+    <script src="/bower_components/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="bower_components/EaselJS/lib/easeljs-0.8.0.min.js"></script>
     <script type="text/javascript" src="bower_components/PreloadJS/lib/preloadjs-0.6.0.min.js"></script>
     <script type="text/javascript" src="bower_components/SoundJS/lib/soundjs-0.6.0.min.js"></script>
@@ -35,6 +36,44 @@
         <div class="page-header">
             <h1><i class="html5"><span>HTML5</span></i> Bomber<strong>girl</strong></h1>
         </div>
+
+        <div id="game-options">
+          <table class="bots-config">
+            <tr>
+            <td>
+            Shaggy
+            <select class="bot-config" name="bot-1">
+              <option value="brave">Brave</option>
+              <option value="coward" selected="true">Coward</option>
+            </select>
+            </td>
+            <td>
+            Summer
+            <select class="bot-config" name="bot-2">
+              <option value="brave">Brave</option>
+              <option value="coward">Coward</option>
+            </select>
+            </td>
+            </tr>
+            <tr>
+            <td>
+            Nymeria
+            <select class="bot-config" name="bot-3">
+              <option value="brave">Brave</option>
+              <option value="coward" selected="true">Coward</option>
+            </select>
+            </td>
+            <td>
+            Ghost<br>
+            <select class="bot-config" name="bot-4">
+              <option value="brave">Brave</option>
+              <option value="coward">Coward</option>
+            </select>
+            </td>
+            </tr>
+          </table>
+        </div>
+
         <div id="game">
             <canvas id="canvas" width="545" height="416"></canvas>
         </div>

@@ -107,7 +107,7 @@ GameState = Class.extend({
         result.push({x: x, y: y + 1});
 
       result = _.filter(result, function (p) {
-        return (!self._isWoodPosition(p) && !self._isWallPosition(p));
+        return (!self._isWoodPosition(p) && !self._isWallPosition(p) && self.isSafe(p));
       });
 
       return result;

@@ -13,6 +13,10 @@ Utils.manhattanDistance = function (p1, p2) {
   return Math.abs(p1.x - p2.x) + Math.abs(p1.y - p2.y);
 }
 
+Utils.distance = function (p1, p2) {
+  return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
+}
+
 /**
  * Convert bitmap pixels position to entity on grid position.
  */
@@ -63,7 +67,7 @@ Utils.nextPositionAfterAction = function(action, currentPosition) {
         case 'bomb':
             break;
         default:
-            console.log('Shoud not be here');
+            //console.log('Shoud not be here');
     }
     return { x: x, y: y }
 };

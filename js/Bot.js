@@ -297,7 +297,7 @@ Bot = Player.extend({
         for (var i = 0; i < gGameEngine.bombs.length; i++) {
             var bomb = gGameEngine.bombs[i];
             if (Utils.comparePositions(bomb.position, this.position)) {
-                return;
+                return false;
             }
         }
 
@@ -312,7 +312,10 @@ Bot = Player.extend({
                 Utils.removeFromArray(that.bombs, bomb);
                 that.wait = false;
             });
+
+            return true;
         }
+        return false;
     },
 
     /**
