@@ -130,6 +130,15 @@ GameState = Class.extend({
     return minPath;
   },
 
+  isDanger: function (position) {
+    var self = this;
+    var positions = this._getAdjacentPos(position);
+
+    return _.every(positions, function (p) {
+      return self._isBombPosition(p) || self._isWoodPosition(p) || self._isWallPosition(p);
+    });
+  },
+
   isSafe: function(position) {
         for (var i = 0; i < gGameEngine.bombs.length; i++) {
             var bomb = gGameEngine.bombs[i];
