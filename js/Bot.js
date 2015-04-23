@@ -94,9 +94,9 @@ Bot = Player.extend({
      * Finds the next tile position where we should move.
      */
     findTargetPosition: function() {
-        var target = { x: this.position.x, y: this.position.y };
-        target.x += this.dirX;
-        target.y += this.dirY;
+        // var target = { x: this.position.x, y: this.position.y };
+        // target.x += this.dirX;
+        // target.y += this.dirY;
 
         var targets = this.getPossibleTargets();
         // Do not go the same way if possible
@@ -143,7 +143,7 @@ Bot = Player.extend({
     /**
      * Returns near grass tiles.
      */
-    getPossibleTargets: function() {
+    getPossibleTargets: function() {    
         var targets = [];
         for (var i = 0; i < 4; i++) {
             var dirX;
@@ -297,7 +297,7 @@ Bot = Player.extend({
         for (var i = 0; i < gGameEngine.bombs.length; i++) {
             var bomb = gGameEngine.bombs[i];
             if (Utils.comparePositions(bomb.position, this.position)) {
-                return;
+                return false;
             }
         }
 
@@ -312,7 +312,10 @@ Bot = Player.extend({
                 Utils.removeFromArray(that.bombs, bomb);
                 that.wait = false;
             });
+
+            return true;
         }
+        return false;
     },
 
     /**
@@ -325,6 +328,7 @@ Bot = Player.extend({
             for (var j = 0; j < fires.length; j++) {
                 var fire = fires[j];
                 if (Utils.comparePositions(fire, position)) {
+                    // console.log("???");
                     return false;
                 }
             }

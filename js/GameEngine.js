@@ -3,20 +3,24 @@ GameEngine = Class.extend({
     tilesX: 17,
     tilesY: 13,
     size: {},
-    fps: 50,
+    fps: 200,
     botsCount: 2, /* 0 - 3 */
     playersCount: 2, /* 1 - 2 */
-    bonusesPercent: 16,
+    bonusesPercent: 0,
 
     stage: null,
     menu: null,
     players: [],
     bots: [],
     tiles: [],
+    wallTiles: null,
     bombs: [],
     bonuses: [],
 
     playerBoyImg: null,
+    playerBoyImg2: null,
+    playerBoyImg3: null,
+    playerBoyImg4: null,
     playerGirlImg: null,
     playerGirl2Img: null,
     tilesImgs: {},
@@ -24,8 +28,8 @@ GameEngine = Class.extend({
     fireImg: null,
     bonusesImg: null,
 
-    playing: false,
-    mute: false,
+    playing: true,
+    mute: true,
     soundtrackLoaded: false,
     soundtrackPlaying: false,
     soundtrack: null,
@@ -47,6 +51,9 @@ GameEngine = Class.extend({
         var that = this;
         queue.addEventListener("complete", function() {
             that.playerBoyImg = queue.getResult("playerBoy");
+            that.playerBoyImg2 = queue.getResult("playerBoy2");
+            that.playerBoyImg3 = queue.getResult("playerBoy3");
+            that.playerBoyImg4 = queue.getResult("playerBoy4");
             that.playerGirlImg = queue.getResult("playerGirl");
             that.playerGirl2Img = queue.getResult("playerGirl2");
             that.tilesImgs.grass = queue.getResult("tile_grass");
@@ -59,6 +66,9 @@ GameEngine = Class.extend({
         });
         queue.loadManifest([
             {id: "playerBoy", src: "img/george.png"},
+            {id: "playerBoy2", src: "img/george2.png"},
+            {id: "playerBoy3", src: "img/george3.png"},
+            {id: "playerBoy4", src: "img/george4.png"},
             {id: "playerGirl", src: "img/betty.png"},
             {id: "playerGirl2", src: "img/betty2.png"},
             {id: "tile_grass", src: "img/tile_grass.png"},
@@ -69,10 +79,10 @@ GameEngine = Class.extend({
             {id: "bonuses", src: "img/bonuses.png"}
         ]);
 
-        createjs.Sound.addEventListener("fileload", this.onSoundLoaded);
-        createjs.Sound.alternateExtensions = ["mp3"];
-        createjs.Sound.registerSound("sound/bomb.ogg", "bomb");
-        createjs.Sound.registerSound("sound/game.ogg", "game");
+        // createjs.Sound.addEventListener("fileload", this.onSoundLoaded);
+        // createjs.Sound.alternateExtensions = ["mp3"];
+        // createjs.Sound.registerSound("sound/bomb.ogg", "bomb");
+        // createjs.Sound.registerSound("sound/game.ogg", "game");
 
         // Create menu
         this.menu = new Menu();
@@ -177,6 +187,70 @@ GameEngine = Class.extend({
         gGameEngine.stage.update();
     },
 
+    getCurrentGameState: function(bot_id) {
+        return new GameState(this._getBotStates(), this._getTiles(), this._getBombStates(), bot_id);   
+    },
+
+    _getBombStates: function() {
+        var that = this;
+        return _.map(this.bombs, function(bomb) {   
+            return { 
+                position: bomb.position, 
+                strength: bomb.strength, 
+                timer: bomb.timer, 
+                timerMax: bomb.timerMax,
+                exploded: bomb.exploded,
+                fires: that._getFireStates(bomb)
+            }    
+        });             
+    },
+
+    _getFireStates: function(bomb) {
+        return _.map(bomb.fires, function(fire) {           
+            return { position: fire.position };      
+        });
+    },
+
+    _getTiles: function() {
+        var tiles = [];
+        for (var j = 0; j < this.tilesX; j++) {
+            tiles[j] = [];
+            for (var i = 0; i < this.tilesY; i++) {
+                tiles[j][i] = 'grass'; 
+            }
+        }
+
+        _.each(this.tiles, function(tile) {
+            tiles[tile.position.x][tile.position.y] = tile.material;
+        });   
+
+        return tiles;        
+    },
+
+
+  _buildPositionToMaterialHash: function(tiles, type) {
+    var hash = {};
+    
+    _.each(tiles, function(tile) {
+      hash[tile.poisition] = type;    
+    });
+
+     return hash;
+   },
+
+    _getBotStates: function() {
+        var that = this; 
+        return _.map(this.bots, function(bot) {
+            return that._extractBotState(bot);
+        }).concat(_.map(this.players, function(player) {
+            return that._extractBotState(player);
+        }));            
+    },
+
+    _extractBotState: function(bot) {
+        return { id: bot.id, avaiableBombs: bot.avaiable_bombs(), position: bot.position, alive: bot.alive };
+    },
+
     drawTiles: function() {
         for (var i = 0; i < this.tilesY; i++) {
             for (var j = 0; j < this.tilesX; j++) {
@@ -196,10 +270,11 @@ GameEngine = Class.extend({
                         && !(i >= this.tilesY - 3 && j >= this.tilesX - 3)
                         && !(i <= 2 && j >= this.tilesX - 3)
                         && !(i >= this.tilesY - 3 && j <= 2)) {
-
-                        var wood = new Tile('wood', { x: j, y: i });
-                        this.stage.addChild(wood.bmp);
-                        this.tiles.push(wood);
+                        if (Math.random() >= 0.4){
+                            var wood = new Tile('wood', { x: j, y: i });
+                            this.stage.addChild(wood.bmp);
+                            this.tiles.push(wood);
+                        }
                     }
                 }
             }
@@ -237,8 +312,8 @@ GameEngine = Class.extend({
                     || (j == 3 && tile.position.x > this.tilesX / 2 && tile.position.y > this.tilesX / 2)) {
 
                     var typePosition = placedCount % 3;
-                    var bonus = new Bonus(tile.position, typePosition);
-                    this.bonuses.push(bonus);
+                    // var bonus = new Bonus(tile.position, typePosition);
+                    //this.bonuses.push(bonus);
 
                     // Move wood to front
                     this.moveToFront(tile.bmp);
@@ -252,23 +327,33 @@ GameEngine = Class.extend({
     spawnBots: function() {
         this.bots = [];
 
+        // Spawns the four agents
         if (this.botsCount >= 1) {
-            var bot2 = new Bot({ x: 1, y: this.tilesY - 2 });
+            var bot2 = new Agent({ x: 1, y: this.tilesY - 2 });
+            bot2.personality = Personalities.Macho;
             this.bots.push(bot2);
         }
 
         if (this.botsCount >= 2) {
-            var bot3 = new Bot({ x: this.tilesX - 2, y: 1 });
+            var bot3 = new Agent({ x: this.tilesX - 2, y: 1 });
+            bot3.id = 1;
+            bot3.personality = Personalities.Shy;
             this.bots.push(bot3);
         }
 
         if (this.botsCount >= 3) {
-            var bot = new Bot({ x: this.tilesX - 2, y: this.tilesY - 2 });
+            var bot = new Agent({ x: this.tilesX - 2, y: this.tilesY - 2 });
+            bot.id = 2;
+            bot.personality = Personalities.Psycho;
             this.bots.push(bot);
+            // console.log(this.bots);
+            // console.log(jefferson);
         }
 
         if (this.botsCount >= 4) {
-            var bot = new Bot({ x: 1, y: 1 });
+            var bot = new Agent({ x: 1, y: 1 });
+            bot.id = 3;
+            bot.personality = Personalities.Vanilla;
             this.bots.push(bot);
         }
     },
@@ -289,7 +374,7 @@ GameEngine = Class.extend({
                 'right': 'right2',
                 'bomb': 'bomb2'
             };
-            var player2 = new Player({ x: this.tilesX - 2, y: this.tilesY - 2 }, controls, 1);
+            var player2 = new Player({ x: this.tilesX - 2, y: this.tilesY - 2 }, controls);
             this.players.push(player2);
         }
     },
@@ -311,6 +396,15 @@ GameEngine = Class.extend({
                 return tile;
             }
         }
+    },
+
+    /**
+     * Returns bomb at given position.
+     */
+    getBomb: function(position) {
+        return _.find(this.bombs, function(bomb) {
+            return bomb.position.x == position.x && bomb.position.y == position.y
+        });
     },
 
     /**

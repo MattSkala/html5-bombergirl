@@ -1,4 +1,6 @@
+id = 0;
 Player = Entity.extend({
+
     id: 0,
 
     /**
@@ -53,21 +55,26 @@ Player = Entity.extend({
 
     deadTimer: 0,
 
-    init: function(position, controls, id) {
-        if (id) {
-            this.id = id;
-        }
+    init: function(position, controls) {
+        this.id = id;
+        id++;
 
+        var img;
         if (controls) {
             this.controls = controls;
         }
 
-        var img = gGameEngine.playerBoyImg;
-        if (!(this instanceof Bot)) {
-            if (this.id == 0) {
-                img = gGameEngine.playerGirlImg;
+        if (position.x == 1) {
+            if (position.y == 1) {
+                img = gGameEngine.playerBoyImg;
             } else {
-                img = gGameEngine.playerGirl2Img;
+                img = gGameEngine.playerBoyImg2;
+            }
+        } else {
+            if (position.y == 1) {
+                img = gGameEngine.playerBoyImg3;
+            } else {
+                img = gGameEngine.playerBoyImg4;
             }
         }
 
@@ -109,14 +116,8 @@ Player = Entity.extend({
                     }
                 }
 
-                var unexplodedBombs = 0;
-                for (var i = 0; i < that.bombs.length; i++) {
-                    if (!that.bombs[i].exploded) {
-                        unexplodedBombs++;
-                    }
-                }
-
-                if (unexplodedBombs < that.bombsMax) {
+                
+                if (that._has_extra_bomb()) {
                     var bomb = new Bomb(that.position, that.bombStrength);
                     gGameEngine.stage.addChild(bomb.bmp);
                     that.bombs.push(bomb);
@@ -128,6 +129,21 @@ Player = Entity.extend({
                 }
             });
         }
+    },
+
+    avaiable_bombs: function() {
+        var unexplodedBombs = 0;
+        var numBomb = this.bombs.length;
+        for (var i = 0; i < numBomb; i++) {
+            if (!this.bombs[i].exploded) {
+                unexplodedBombs++;
+            }
+        }    
+        return this.bombsMax - unexplodedBombs;    
+    },
+
+    _has_extra_bomb: function() {        
+        return this.avaiable_bombs() > 0;    
     },
 
     update: function() {
@@ -192,6 +208,24 @@ Player = Entity.extend({
         }
 
         this.handleBonusCollision();
+    },
+
+    // return a sub-set of this.controls.keys 
+    getPossibleActions: function() {
+        var that = this;
+        return _.filter(Object.keys(this.controls), function(action) {
+            return that._doable_action(action);        
+        })
+    },
+
+    _doable_action: function(action) {
+        var currentGameState = gGameEngine.getCurrentGameState();        
+        var nextPosition = Utils.nextPositionAfterAction(action, this.position);
+        if(action === 'bomb' && ! this._has_extra_bomb()) {
+            return false;        
+        } 
+        
+        return gGameEngine.getTileMaterial(nextPosition) === 'grass' && !gGameEngine.getBomb(nextPosition);
     },
 
     /**
