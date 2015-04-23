@@ -6,17 +6,17 @@
   ],
   tiles : 2 dimenional array,
   bombs: [
-    { position: { x:1, y:1 } , 
-      strength: 1, 
+    { position: { x:1, y:1 } ,
+      strength: 1,
       timer: 2, t
-      timerMax: 2, 
+      timerMax: 2,
       exploded: false,
       fire: [
-        { position: { x:1, y:1 } } 
+        { position: { x:1, y:1 } }
       ]
     }
   ]
-} 
+}
 */
 
 GameState = Class.extend({
@@ -57,7 +57,62 @@ GameState = Class.extend({
     return result;
   },
 
-  // asumption: the given action is possible/executable 
+  getPathTo: function (bot) {
+    var self = this;
+    var visited = [];
+    for (var i = 0; i < this.tilesX; i++) {
+      var a = [];
+      for (var j = 0; j < this.tilesY.length; j++)
+        a.push(false);
+      visited.push(a);
+    }
+
+    var queue = [[bot.position]];
+
+    while (queue.length) {
+      var path = queue.unshift();
+      var pos = path[path.length - 1];
+
+      if (this._isBotPosition(pos) && pos.x == bot.position.x && pos.y === bot.position.y)
+        return path;
+
+      if (visited[pos.x][pos.y])
+        continue;
+
+      visited[pos.x][pos.y] = true;
+
+      var positions = getAdjacentPos(pos);
+      _.each(positions, function (pos) {
+        if (!visited[pos.x][pos.y]) {
+          queue.push(path.concat([pos]));
+        }
+      });
+    }
+
+    return null;
+
+    function getAdjacentPos(pos) {
+      var y = pos.y;
+      var x = pos.x;
+
+      var result = [];
+
+      if (x > 0)
+        result.push([x - 1, y]);
+      if (y > 0)
+        result.push([x, y - 1]);
+      if (x < self.tileX - 1)
+        result.push([x + 1, y]);
+      if (y < self.tileY - 1)
+        result.push([x, y + 1]);
+
+      return _.map(result, function (p) {
+        return (!self._isWoodPosition(p) && !self._isWallPosition(p));
+      });
+    }
+  },
+
+  // asumption: the given action is possible/executable
   generateSuccessor: function(bot_id, action) {
     var newBots;
     var newTiles;
@@ -85,33 +140,33 @@ GameState = Class.extend({
     for (var j = 0; j < this.tilesX; j++) {
       newTileStates[j] = [];
       for (var i = 0; i < this.tilesY; i++) {
-        newTileStates[j][i] = this.tiles[j][i]; 
+        newTileStates[j][i] = this.tiles[j][i];
       }
-    } 
-        
+    }
+
     // any wall got destroyed
     _.each(newBombStates, function(bomb) {
       if (bomb.exploded) {
         _.each(bomb.fires, function(position) {
           if (newTileStates[position.x][position.y] === 'wood') {
             newTileStates[position.x][position.y] = 'grass';
-          }    
-        });         
-      }     
+          }
+        });
+      }
     });
     return newTileStates;
   },
 
   _getSuccessorBombStates: function() {
     var self = this;
-     // increment bombs' timers + check if any bomb explode + fire them?? 
-    var newBombs = _.chain(this.bombs).filter(function(bomb) { 
+     // increment bombs' timers + check if any bomb explode + fire them??
+    var newBombs = _.chain(this.bombs).filter(function(bomb) {
       return !bomb.exploded;
-    }).map(function(bomb) {   
-      return { 
-                position: bomb.position, 
-                strength: bomb.strength, 
-                timer: bomb.timer + 1, 
+    }).map(function(bomb) {
+      return {
+                position: bomb.position,
+                strength: bomb.strength,
+                timer: bomb.timer + 1,
                 timerMax: bomb.timerMax,
                 exploded: bomb.exploded,
                 fires: []
@@ -121,7 +176,7 @@ GameState = Class.extend({
     _.each(newBombs, function(bomb) {
      if (bomb.timer > bomb.timerMax * createjs.Ticker.getMeasuredFPS()) {
         self._explode(bomb);
-      }     
+      }
     });
     return newBombs;
   },
@@ -132,16 +187,16 @@ GameState = Class.extend({
       if(bot.id === bot_id) {
         var newBotState = self._copy_bot_state(bot);
         if (action === 'bomb') {
-          newBotState.avaiableBombs = newBotState.avaiableBombs - 1; 
-        } 
-        // is next poisition gonna make the boss killed 
+          newBotState.avaiableBombs = newBotState.avaiableBombs - 1;
+        }
+        // is next poisition gonna make the boss killed
         newBotState.alive = !self.isFireCollision(nextPosition);
         return newBotState;
       } else {
         return self._copy_bot_state(bot);
       }
     });
-  },        
+  },
 
   _copy_bot_state: function(bot) {
     return _.clone(bot);
@@ -150,10 +205,10 @@ GameState = Class.extend({
   // explode the bombs and return an arrays of `wood` wall positions got destroyed
   // explode other bombs in range
   _explode: function(bomb) {
-    bomb.exploded = true;    
+    bomb.exploded = true;
     var positions = this._getDangerPositions(bomb);
     _.each(positions, function(position) {
-      bomb.fires.push(position);      
+      bomb.fires.push(position);
     });
   },
 
@@ -176,7 +231,7 @@ GameState = Class.extend({
             var position = { x: bomb.position.x + j * dirX, y: bomb.position.y + j * dirY };
 
             var material = this.tiles[position.x][position.y];
-            if (material === 'wall') { 
+            if (material === 'wall') {
                 explode = false;
                 last = true;
             } else if (material === 'wood') {
@@ -216,7 +271,7 @@ GameState = Class.extend({
   getPossibleActionsForBot: function(bot_id) {
     var that = this;
     return _.filter(this.POSSIBLE_ACTIONS, function(action) {
-        return that._doable_action(bot_id, action);        
+        return that._doable_action(bot_id, action);
     })
   },
 
@@ -229,15 +284,15 @@ GameState = Class.extend({
 
     var nextPosition = Utils.nextPositionAfterAction(action, botState.position);
     if(action === 'bomb' && botState.avaiableBombs <= 0) {
-      return false;        
-    } 
+      return false;
+    }
 
     return this._isGrassPosition(nextPosition) && !this._isBombPosition(nextPosition);
   },
 
   _isBombPosition: function(position) {
     return _.any(this.bombs, function(bomb) {
-      return bomb.position.x === position.x && bomb.position.y === position.y;    
+      return bomb.position.x === position.x && bomb.position.y === position.y;
     });
   },
 
@@ -245,9 +300,23 @@ GameState = Class.extend({
     return this.tiles[position.x][position.y] === 'grass';
   },
 
+  _isWallPosition: function (pos) {
+    return this.tiles[pos.x][pos.y] === 'wall';
+  },
+
+  _isWoodPosition: function (pos) {
+    return this.tiles[pos.x][pos.y] === 'wood';
+  },
+
+  _isBotPosition: function(position) {
+    return _.any(this.bots, function(bot) {
+      return bot.position.x === position.x && bot.position.y === position.y;
+    });
+  },
+
   _getBotState: function(bot_id) {
     return _.find(this.bots, function(bot) {
-      return bot.id === bot_id;    
+      return bot.id === bot_id;
     });
   }
 });

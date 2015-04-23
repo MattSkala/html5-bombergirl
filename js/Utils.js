@@ -9,6 +9,9 @@ Utils.comparePositions = function(pos1, pos2) {
     return pos1.x == pos2.x && pos1.y == pos2.y;
 };
 
+Utils.manhattanDistance = function (p1, p2) {
+  return Math.abs(p1.x - p2.x) + Math.abs(p1.y - p2.y);
+}
 
 /**
  * Convert bitmap pixels position to entity on grid position.
@@ -58,11 +61,11 @@ Utils.nextPositionAfterAction = function(action, currentPosition) {
             x += 1;
             break;
         case 'bomb':
-            break;        
+            break;
         default:
             console.log('Shoud not be here');
     }
-    return { x: x, y: y }    
+    return { x: x, y: y }
 };
 
 Utils.copyPosition = function(position) {
