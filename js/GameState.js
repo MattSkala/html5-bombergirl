@@ -67,10 +67,10 @@ GameState = Class.extend({
       visited.push(a);
     }
 
-    var queue = [[bot.position]];
+    var queue = [[this.getMe().position]];
 
     while (queue.length) {
-      var path = queue.unshift();
+      var path = queue.shift();
       var pos = path[path.length - 1];
 
       if (this._isBotPosition(pos) && pos.x == bot.position.x && pos.y === bot.position.y)
@@ -98,17 +98,19 @@ GameState = Class.extend({
       var result = [];
 
       if (x > 0)
-        result.push([x - 1, y]);
+        result.push({x: x - 1, y: y});
       if (y > 0)
-        result.push([x, y - 1]);
-      if (x < self.tileX - 1)
-        result.push([x + 1, y]);
-      if (y < self.tileY - 1)
-        result.push([x, y + 1]);
+        result.push({x: x, y: y - 1});
+      if (x < self.tilesX - 1)
+        result.push({x: x + 1, y: y});
+      if (y < self.tilesY - 1)
+        result.push({x: x, y: y + 1});
 
-      return _.map(result, function (p) {
+      result = _.filter(result, function (p) {
         return (!self._isWoodPosition(p) && !self._isWallPosition(p));
       });
+
+      return result;
     }
   },
 
