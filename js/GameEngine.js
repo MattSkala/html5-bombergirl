@@ -3,7 +3,7 @@ GameEngine = Class.extend({
     tilesX: 17,
     tilesY: 13,
     size: {},
-    fps: 50,
+    fps: 2000,
     botsCount: 2, /* 0 - 3 */
     playersCount: 2, /* 1 - 2 */
     bonusesPercent: 16,
@@ -26,7 +26,7 @@ GameEngine = Class.extend({
     bonusesImg: null,
 
     playing: false,
-    mute: false,
+    mute: true,
     soundtrackLoaded: false,
     soundtrackPlaying: false,
     soundtrack: null,
@@ -178,8 +178,8 @@ GameEngine = Class.extend({
         gGameEngine.stage.update();
     },
 
-    getCurrentGameState: function() {
-        return new GameState(this._getBotStates(), this._getTiles(), this._getBombStates());   
+    getCurrentGameState: function(bot_id) {
+        return new GameState(this._getBotStates(), this._getTiles(), this._getBombStates(), bot_id);   
     },
 
     _getBombStates: function() {
@@ -344,10 +344,10 @@ GameEngine = Class.extend({
         }
 
         if (this.botsCount >= 3) {
-            var bot = new Agent({ x: this.tilesX - 2, y: this.tilesY - 2 });
+            var bot = new Agent({ x: this.tilesX - 3, y: this.tilesY - 2 });
             bot.id = 2;
             this.bots.push(bot);
-            console.log(this.bots);
+            // console.log(this.bots);
             // console.log(jefferson);
         }
 

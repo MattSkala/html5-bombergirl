@@ -32,3 +32,9 @@ BombHeuristics.aggressive = function(state) {
     return false;
 };
 
+BombHeuristics.spleunker = function(state) {
+    var me = state.getMe();
+    console.log(me);
+    return me.getNearWood();
+};
+

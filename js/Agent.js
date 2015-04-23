@@ -7,7 +7,7 @@ Agent = Bot.extend({
         },
         walledIn: {
             move: MoveHeuristics.lazy,
-            bomb: BombHeuristics.passive
+            bomb: BombHeuristics.spleunker
         },
         neutral: {
             move: MoveHeuristics.lazy,
@@ -33,8 +33,7 @@ Agent = Bot.extend({
     },
 
     pickBomb: function(heuristic) {
-        console.log(heuristic);
-        return heuristic();
+        return heuristic(gGameEngine.getCurrentGameState(this.id));
     },
 
     update: function() {
@@ -47,8 +46,8 @@ Agent = Bot.extend({
 
         // AI
         var currBehavior = this.decideBehavior();
-        console.log("here");
-        console.log(this.personality);
+
+        // console.log(gGameEngine.getCurrentGameState(this.id));
 
         // BOMB
         if (this.pickBomb(currBehavior.bomb)) {
@@ -119,7 +118,7 @@ Agent = Bot.extend({
             return this.personality.threatened;
         }
         // Walled In
-        if (this.isWalledIn()) {
+        if (true) {//this.isWalledIn()) {
             return this.personality.walledIn;
         }
         // Neutral
