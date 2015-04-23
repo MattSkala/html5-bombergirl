@@ -239,7 +239,7 @@ GameEngine = Class.extend({
     },
 
     _extractBotState: function(bot) {
-        return bot;//{ id: bot.id, avaiableBombs: bot.avaiable_bombs(), position: bot.position, alive: bot.alive };
+        return { id: bot.id, avaiableBombs: bot.avaiable_bombs(), position: bot.position, alive: bot.alive };
     },
 
     drawTiles: function() {
@@ -320,20 +320,6 @@ GameEngine = Class.extend({
         // Spawns the four agents
         if (this.botsCount >= 1) {
             var bot2 = new Bot({ x: 1, y: this.tilesY - 2 });
-            bot2.personality = {
-                threatened: {
-                    move: MoveHeuristics.cautious,
-                    bomb: BombHeuristics.passive
-                },
-                walledIn: {
-                    move: MoveHeuristics.cautious,
-                    bomb: BombHeuristics.spleunker
-                },
-                neutral: {
-                    move: MoveHeuristics.passive,
-                    bomb: BombHeuristics.spleunker
-                }
-            };
             this.bots.push(bot2);
         }
 
@@ -342,15 +328,15 @@ GameEngine = Class.extend({
             bot3.id = 1;
             bot3.personality = {
                 threatened: {
-                    move: MoveHeuristics.lazy,
+                    move: MoveHeuristics.cautious,
                     bomb: BombHeuristics.passive
                 },
                 walledIn: {
-                    move: MoveHeuristics.hysterical,
+                    move: MoveHeuristics.cautious,
                     bomb: BombHeuristics.spleunker
                 },
                 neutral: {
-                    move: MoveHeuristics.hysterical,
+                    move: MoveHeuristics.outgoing,
                     bomb: BombHeuristics.passive
                 }
             };
@@ -360,6 +346,20 @@ GameEngine = Class.extend({
         if (this.botsCount >= 3) {
             var bot = new Agent({ x: this.tilesX - 3, y: this.tilesY - 2 });
             bot.id = 2;
+            bot.personality = {
+                threatened: {
+                    move: MoveHeuristics.cautious,
+                    bomb: BombHeuristics.spleunker
+                },
+                walledIn: {
+                    move: MoveHeuristics.cautious,
+                    bomb: BombHeuristics.spleunker
+                },
+                neutral: {
+                    move: MoveHeuristics.outgoing,
+                    bomb: BombHeuristics.spleunker
+                }
+            };
             this.bots.push(bot);
             // console.log(this.bots);
             // console.log(jefferson);

@@ -11,11 +11,43 @@ MoveHeuristics.hysterical = function(state) {
     return Math.random();
 };
 
+MoveHeuristics.shy = function(state) {
+    var value = 0;
+    var others = state.getOthers();
+    var me = state.getMe();
+    var othersDist = [];
+    for (var i = others.length -1; i>=0 ; i--) {
+        othersDist.push(Utils.manhattanDistance(me.position,others[i].position));
+    }
+    var arrayMax = Function.prototype.apply.bind(Math.max, null);
+    var max= arrayMax(othersDist);
+    max = 1.0/max;
+    value += max;
+    return value;
+};
+
+MoveHeuristics.outgoing = function(state) {
+    var value = 0;
+    var others = state.getOthers();
+    var me = state.getMe();
+    var othersDist =[];
+    for (var i = others.length - 1; i>=0 ; i--) {
+        othersDist.push(Utils.manhattanDistance(me.position,others[i].position));
+    }
+    var arrayMin = Function.prototype.apply.bind(Math.min, null);
+    var min = arrayMin(othersDist);
+    min = 1.0/min;
+    value += min;
+    return value;
+};
+
 MoveHeuristics.cautious = function(state) {
-    if (state.getMe().isSafe(state.getMe().position)) {
+    console.log(state);
+    var me = state.getMe();
+    console.log(me);
+    if (state.isSafe(me.position)) {
         return 1;
     }
-    console.log("unsafe");
     return 0;
 }
 
@@ -43,6 +75,6 @@ BombHeuristics.aggressive = function(state) {
 
 BombHeuristics.spleunker = function(state) {
     var me = state.getMe();
-    return me.getNearWood();
+    return state.getNearWood(me.position);
 };
 

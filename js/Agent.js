@@ -7,21 +7,24 @@ Agent = Bot.extend({
         },
         walledIn: {
             move: MoveHeuristics.lazy,
-            bomb: BombHeuristics.aggressive
+            bomb: BombHeuristics.spleunker
         },
         neutral: {
             move: MoveHeuristics.lazy,
-            bomb: BombHeuristics.aggressive
+            bomb: BombHeuristics.spleunker
         }
     },
 
     pickMove: function(heuristic) {
-        var actions = this.getPossibleActions(); // REPLACE WITH AN CODE
-        // console.log(actions);
+        // var actions = this.getPossibleActions(); // REPLACE WITH AN CODE
         var maxMove = "idle"; 
         var gs = gGameEngine.getCurrentGameState(this.id);
+        var actions = gs.getPossibleActionsForBot(this.id);
         var maxScore = heuristic(gs.generateSuccessor(this.id, "idle"));
+        // console.log("start");
         for (var i = actions.length - 1; i >= 0; i--) {
+            // console.log(gs.generateSuccessor(this.id, act).getMe().position);
+            // console.log(this.position);
             var act = actions[i];
             var score = heuristic(gs.generateSuccessor(this.id, act));
             if (score >= maxScore) {
@@ -118,7 +121,7 @@ Agent = Bot.extend({
             return this.personality.threatened;
         }
         // Walled In
-        if (true) {//this.isWalledIn()) {
+        if (this.isWalledIn()) {
             return this.personality.walledIn;
         }
         // Neutral
@@ -126,7 +129,15 @@ Agent = Bot.extend({
     },
 
     isWalledIn: function() {
-        return false;
+        var gs = gGameEngine.getCurrentGameState(this.id);
+        for (var i = gs.getOthers().length - 1; i >= 0; i--) {
+            var bot = gs.getOthers()[i];
+            var path = gs.getPathTo(bot);
+            if (path) {
+                return false;
+            }
+        }
+        return true;
     }
 
 });
