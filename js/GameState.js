@@ -144,12 +144,7 @@ GameState = Class.extend({
   },        
 
   _copy_bot_state: function(bot) {
-    return jQuery.extend(true,{
-      id: bot.id,
-      avaiableBombs: bot.avaiableBombs,
-      position: { x: bot.position.x, y: bot.position.y },
-      alive: bot.alive
-    }, new Bot());
+    return _.clone(bot);
   },
 
   // explode the bombs and return an arrays of `wood` wall positions got destroyed

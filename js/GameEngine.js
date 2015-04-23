@@ -239,7 +239,7 @@ GameEngine = Class.extend({
     },
 
     _extractBotState: function(bot) {
-        return { id: bot.id, avaiableBombs: bot.avaiable_bombs(), position: bot.position, alive: bot.alive };
+        return bot;//{ id: bot.id, avaiableBombs: bot.avaiable_bombs(), position: bot.position, alive: bot.alive };
     },
 
     drawTiles: function() {
@@ -320,6 +320,20 @@ GameEngine = Class.extend({
         // Spawns the four agents
         if (this.botsCount >= 1) {
             var bot2 = new Bot({ x: 1, y: this.tilesY - 2 });
+            bot2.personality = {
+                threatened: {
+                    move: MoveHeuristics.cautious,
+                    bomb: BombHeuristics.passive
+                },
+                walledIn: {
+                    move: MoveHeuristics.cautious,
+                    bomb: BombHeuristics.spleunker
+                },
+                neutral: {
+                    move: MoveHeuristics.passive,
+                    bomb: BombHeuristics.spleunker
+                }
+            };
             this.bots.push(bot2);
         }
 
@@ -332,8 +346,8 @@ GameEngine = Class.extend({
                     bomb: BombHeuristics.passive
                 },
                 walledIn: {
-                    move: MoveHeuristics.lazy,
-                    bomb: BombHeuristics.passive
+                    move: MoveHeuristics.hysterical,
+                    bomb: BombHeuristics.spleunker
                 },
                 neutral: {
                     move: MoveHeuristics.hysterical,

@@ -325,6 +325,7 @@ Bot = Player.extend({
             for (var j = 0; j < fires.length; j++) {
                 var fire = fires[j];
                 if (Utils.comparePositions(fire, position)) {
+                    // console.log("???");
                     return false;
                 }
             }

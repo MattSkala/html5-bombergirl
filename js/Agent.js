@@ -114,7 +114,8 @@ Agent = Bot.extend({
 
     decideBehavior: function() {
         // Threatened
-        if (!this.isSafe(this)) {
+        if (!this.isSafe(this.position)) {
+            console.log(this);
             return this.personality.threatened;
         }
         // Walled In

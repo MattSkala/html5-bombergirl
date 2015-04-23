@@ -11,6 +11,14 @@ MoveHeuristics.hysterical = function(state) {
     return Math.random();
 };
 
+MoveHeuristics.cautious = function(state) {
+    if (state.getMe().isSafe(state.getMe().position)) {
+        return 1;
+    }
+    console.log("unsafe");
+    return 0;
+}
+
 // Bomb Heuristics: take in state, return should plant bomb
 var BombHeuristics = {};
 
@@ -34,7 +42,6 @@ BombHeuristics.aggressive = function(state) {
 
 BombHeuristics.spleunker = function(state) {
     var me = state.getMe();
-    console.log(me);
     return me.getNearWood();
 };
 
