@@ -239,7 +239,7 @@ GameEngine = Class.extend({
     },
 
     _extractBotState: function(bot) {
-        return { id: bot.id, avaiableBombs: bot.avaiable_bombs(), position: bot.position, alive: bot.alive };
+        return { id: bot.id, avaiableBombs: bot.avaiable_bombs(), position: bot.position, alive: bot.alive, bombStrength: bot.bombStrength };
     },
 
     drawTiles: function() {

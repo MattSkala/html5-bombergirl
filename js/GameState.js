@@ -1,8 +1,8 @@
 /* EX:
 {
   bots : [
-    { id: 1, avaiableBombs: 2, position: { x: 1, y: 2 }, alive: true },
-    { id: 2, avaiableBombs: 1, position: { x: 1, y: 2 }, alive: false }
+    { id: 1, avaiableBombs: 2, position: { x: 1, y: 2 }, alive: true, bombStrength: 1 },
+    { id: 2, avaiableBombs: 1, position: { x: 1, y: 2 }, alive: false, bombStrength: 1 }
   ],
   tiles : 2 dimenional array,
   bombs: [
@@ -51,7 +51,7 @@ GameState = Class.extend({
     nextPosition = Utils.nextPositionAfterAction(action, botState.position);
 
     newBots = this._getSuccessorBotStates(bot_id, action, nextPosition);
-    newBombs = this._getSuccessorBombStates();
+    newBombs = this._getSuccessorBombStates(botState, action);
     newTiles = this._getSuccessorTileStates(newBombs);
 
     return new GameState(newBots, newTiles, newBombs);
@@ -79,7 +79,7 @@ GameState = Class.extend({
     return newTileStates;
   },
 
-  _getSuccessorBombStates: function() {
+  _getSuccessorBombStates: function(bot, action) {
     var self = this;
      // increment bombs' timers + check if any bomb explode + fire them?? 
     var newBombs = _.chain(this.bombs).filter(function(bomb) { 
@@ -100,6 +100,18 @@ GameState = Class.extend({
         self._explode(bomb);
       }     
     });
+
+    if (action === 'bomb') {
+      newBombs.push({
+        position: { x: bot.position.x, y: bot.position.y }, 
+        strength: bot.bombStrength, 
+        timer: 0, 
+        timerMax: 2,
+        exploded: false,
+        fires: []
+      }); 
+    }
+    
     return newBombs;
   },
 
@@ -113,6 +125,7 @@ GameState = Class.extend({
         } 
         // is next poisition gonna make the boss killed 
         newBotState.alive = !self.isFireCollision(nextPosition);
+        newBotState.position = nextPosition;
         return newBotState;
       } else {
         return self._copy_bot_state(bot);
@@ -125,7 +138,8 @@ GameState = Class.extend({
       id: bot.id,
       avaiableBombs: bot.avaiableBombs,
       position: { x: bot.position.x, y: bot.position.y },
-      alive: bot.alive
+      alive: bot.alive,
+      bombStrength: bot.bombStrength
     };
   },
 
