@@ -7,21 +7,24 @@ Agent = Bot.extend({
         },
         walledIn: {
             move: MoveHeuristics.lazy,
-            bomb: BombHeuristics.passive
+            bomb: BombHeuristics.spleunker
         },
         neutral: {
             move: MoveHeuristics.lazy,
-            bomb: BombHeuristics.passive
+            bomb: BombHeuristics.spleunker
         }
     },
 
     pickMove: function(heuristic) {
-        var actions = this.getPossibleActions(); // REPLACE WITH AN CODE
-        // console.log(actions);
+        // var actions = this.getPossibleActions(); // REPLACE WITH AN CODE
         var maxMove = "idle"; 
         var gs = gGameEngine.getCurrentGameState(this.id);
+        var actions = gs.getPossibleActionsForBot(this.id);
         var maxScore = heuristic(gs.generateSuccessor(this.id, "idle"));
+        // console.log("start");
         for (var i = actions.length - 1; i >= 0; i--) {
+            // console.log(gs.generateSuccessor(this.id, act).getMe().position);
+            // console.log(this.position);
             var act = actions[i];
             var score = heuristic(gs.generateSuccessor(this.id, act));
             if (score >= maxScore) {
@@ -33,8 +36,7 @@ Agent = Bot.extend({
     },
 
     pickBomb: function(heuristic) {
-        console.log(heuristic);
-        return heuristic();
+        return heuristic(gGameEngine.getCurrentGameState(this.id));
     },
 
     update: function() {
@@ -47,8 +49,8 @@ Agent = Bot.extend({
 
         // AI
         var currBehavior = this.decideBehavior();
-        console.log("here");
-        console.log(this.personality);
+
+        // console.log(gGameEngine.getCurrentGameState(this.id));
 
         // BOMB
         if (this.pickBomb(currBehavior.bomb)) {
@@ -115,7 +117,7 @@ Agent = Bot.extend({
 
     decideBehavior: function() {
         // Threatened
-        if (!this.isSafe(this)) {
+        if (!this.isSafe(this.position)) {
             return this.personality.threatened;
         }
         // Walled In
@@ -127,7 +129,15 @@ Agent = Bot.extend({
     },
 
     isWalledIn: function() {
-        return false;
+        var gs = gGameEngine.getCurrentGameState(this.id);
+        for (var i = gs.getOthers().length - 1; i >= 0; i--) {
+            var bot = gs.getOthers()[i];
+            var path = gs.getPathTo(bot);
+            if (path) {
+                return false;
+            }
+        }
+        return true;
     }
 
 });
