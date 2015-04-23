@@ -25,7 +25,7 @@ GameEngine = Class.extend({
     fireImg: null,
     bonusesImg: null,
 
-    playing: false,
+    playing: true,
     mute: true,
     soundtrackLoaded: false,
     soundtrackPlaying: false,
@@ -356,7 +356,7 @@ GameEngine = Class.extend({
                     bomb: BombHeuristics.spleunker
                 },
                 neutral: {
-                    move: MoveHeuristics.outgoing,
+                    move: MoveHeuristics.shy,
                     bomb: BombHeuristics.spleunker
                 }
             };

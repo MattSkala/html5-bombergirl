@@ -351,6 +351,20 @@ GameState = Class.extend({
     return this.tiles[position.x][position.y] === 'grass';
   },
 
+  _isWoodPosition: function (pos) {
+    return this.tiles[pos.x][pos.y] === 'wood';
+  },
+
+  _isBotPosition: function(position) {
+    return _.any(this.bots, function(bot) {
+      return bot.position.x === position.x && bot.position.y === position.y;
+    });
+  },
+
+  _isWallPosition: function (pos) {
+    return this.tiles[pos.x][pos.y] === 'wall';
+  },
+
   _getBotState: function(bot_id) {
     return _.find(this.bots, function(bot) {
       return bot.id === bot_id;    
