@@ -11,25 +11,31 @@ MoveHeuristics.hysterical = function(state) {
     return Math.random();
 };
 
+// Moves away from other bots
 MoveHeuristics.shy = function(state) {
     var value = 0;
     var others = state.getOthers();
     var me = state.getMe();
+    if (state.isSafe(me.position))
+        value += 1;
     var othersDist = [];
     for (var i = others.length -1; i>=0 ; i--) {
         othersDist.push(Utils.manhattanDistance(me.position,others[i].position));
     }
-    var arrayMax = Function.prototype.apply.bind(Math.max, null);
-    var max= arrayMax(othersDist);
-    max = 1.0/max;
-    value += max;
+    var arrayMin = Function.prototype.apply.bind(Math.min, null);
+    var min= arrayMin(othersDist);
+    min = 1.0/min;
+    value -= min;
     return value;
 };
 
+// Moves towards other bots
 MoveHeuristics.outgoing = function(state) {
     var value = 0;
     var others = state.getOthers();
     var me = state.getMe();
+    if (state.isSafe(me.position))
+        value += 1;
     var othersDist =[];
     for (var i = others.length - 1; i>=0 ; i--) {
         othersDist.push(Utils.manhattanDistance(me.position,others[i].position));
@@ -41,10 +47,28 @@ MoveHeuristics.outgoing = function(state) {
     return value;
 };
 
-MoveHeuristics.cautious = function(state) {
-    console.log(state);
+// Moves towards wood
+MoveHeuristics.curious = function(state) {
+    var value = 0;
     var me = state.getMe();
-    console.log(me);
+    if (state.isSafe(me.position))
+        value += 1;
+    var wood = state.getWood();
+    var othersDist =[];
+    for (var i = wood.length - 1; i>=0 ; i--) {
+        // console.log(wood[i]);
+        othersDist.push(Utils.manhattanDistance(me.position,wood[i]));
+    }
+    var arrayMin = Function.prototype.apply.bind(Math.min, null);
+    var min = arrayMin(othersDist);
+    min = 1.0/min;
+    value += min;
+    // console.log(value);
+    return value;
+};
+
+MoveHeuristics.cautious = function(state) {
+    var me = state.getMe();
     if (state.isSafe(me.position)) {
         return 1;
     }

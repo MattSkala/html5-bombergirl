@@ -6,7 +6,7 @@ GameEngine = Class.extend({
     fps: 2000,
     botsCount: 2, /* 0 - 3 */
     playersCount: 2, /* 1 - 2 */
-    bonusesPercent: 16,
+    bonusesPercent: 0,
 
     stage: null,
     menu: null,
@@ -302,8 +302,8 @@ GameEngine = Class.extend({
                     || (j == 3 && tile.position.x > this.tilesX / 2 && tile.position.y > this.tilesX / 2)) {
 
                     var typePosition = placedCount % 3;
-                    var bonus = new Bonus(tile.position, typePosition);
-                    this.bonuses.push(bonus);
+                    // var bonus = new Bonus(tile.position, typePosition);
+                    //this.bonuses.push(bonus);
 
                     // Move wood to front
                     this.moveToFront(tile.bmp);
@@ -332,11 +332,11 @@ GameEngine = Class.extend({
                     bomb: BombHeuristics.passive
                 },
                 walledIn: {
-                    move: MoveHeuristics.cautious,
+                    move: MoveHeuristics.curious,
                     bomb: BombHeuristics.spleunker
                 },
                 neutral: {
-                    move: MoveHeuristics.outgoing,
+                    move: MoveHeuristics.shy,
                     bomb: BombHeuristics.passive
                 }
             };
@@ -349,15 +349,15 @@ GameEngine = Class.extend({
             bot.personality = {
                 threatened: {
                     move: MoveHeuristics.cautious,
-                    bomb: BombHeuristics.spleunker
+                    bomb: BombHeuristics.passive
                 },
                 walledIn: {
-                    move: MoveHeuristics.cautious,
+                    move: MoveHeuristics.curious,
                     bomb: BombHeuristics.spleunker
                 },
                 neutral: {
                     move: MoveHeuristics.shy,
-                    bomb: BombHeuristics.spleunker
+                    bomb: BombHeuristics.passive
                 }
             };
             this.bots.push(bot);

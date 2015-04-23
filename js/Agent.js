@@ -17,15 +17,17 @@ Agent = Bot.extend({
 
     pickMove: function(heuristic) {
         // var actions = this.getPossibleActions(); // REPLACE WITH AN CODE
+        // console.log("start");
         var maxMove = "idle"; 
         var gs = gGameEngine.getCurrentGameState(this.id);
         var actions = gs.getPossibleActionsForBot(this.id);
-        var maxScore = heuristic(gs.generateSuccessor(this.id, "idle"));
+        var maxScore = heuristic(gs.generateSuccessor(this.id, "idle")) - 1;
         // console.log("start");
         for (var i = actions.length - 1; i >= 0; i--) {
             // console.log(gs.generateSuccessor(this.id, act).getMe().position);
             // console.log(this.position);
             var act = actions[i];
+            // console.log(act);
             var score = heuristic(gs.generateSuccessor(this.id, act));
             if (score >= maxScore) {
                 maxScore = score;
