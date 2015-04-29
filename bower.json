@@ -6,7 +6,8 @@
     "bootstrap": "~2.3.1",
     "PreloadJS": "*",
     "EaselJS": "*",
-    "SoundJS": "*"
+    "SoundJS": "*",
+    "underscore": "*"
   },
   "ignore": [
     "**/.*",

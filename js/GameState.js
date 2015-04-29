@@ -1,0 +1,249 @@
+/* EX:
+{
+  bots : [
+    { id: 1, avaiableBombs: 2, position: { x: 1, y: 2 }, alive: true, bombStrength: 1 },
+    { id: 2, avaiableBombs: 1, position: { x: 1, y: 2 }, alive: false, bombStrength: 1 }
+  ],
+  tiles : 2 dimenional array,
+  bombs: [
+    { position: { x:1, y:1 } , 
+      strength: 1, 
+      timer: 2, t
+      timerMax: 2, 
+      exploded: false,
+      fire: [
+        { position: { x:1, y:1 } } 
+      ]
+    }
+  ]
+} 
+*/
+
+GameState = Class.extend({
+  POSSIBLE_ACTIONS: ['up', 'down', 'left', 'right', 'bomb'],
+  bots: [],
+  tiles: [],
+  bombs: [],
+
+  tilesX: 17,
+  tilesY: 13,
+
+  init: function(bots, tiles, bombs) {
+    this.bots = bots;
+    this.tiles = tiles;
+    this.bombs = bombs;
+  },
+
+  // asumption: the given action is possible/executable 
+  generateSuccessor: function(bot_id, action) {
+    var newBots;
+    var newTiles;
+    var newBombs;
+    var nextPosition;
+
+    // apply the action => get ghost new state  { id: 1, avaiableBombs: ?, position: ?, alive: ? }
+    var botState = this._getBotState(bot_id);
+    if (!botState.alive) {
+      console.log('trying to generate successor state when bot is dead');
+      return;
+    }
+
+    nextPosition = Utils.nextPositionAfterAction(action, botState.position);
+
+    newBots = this._getSuccessorBotStates(bot_id, action, nextPosition);
+    newBombs = this._getSuccessorBombStates(botState, action);
+    newTiles = this._getSuccessorTileStates(newBombs);
+
+    return new GameState(newBots, newTiles, newBombs);
+  },
+
+  _getSuccessorTileStates: function(newBombStates) {
+    var newTileStates= [];
+    for (var j = 0; j < this.tilesX; j++) {
+      newTileStates[j] = [];
+      for (var i = 0; i < this.tilesY; i++) {
+        newTileStates[j][i] = this.tiles[j][i]; 
+      }
+    } 
+        
+    // any wall got destroyed
+    _.each(newBombStates, function(bomb) {
+      if (bomb.exploded) {
+        _.each(bomb.fires, function(position) {
+          if (newTileStates[position.x][position.y] === 'wood') {
+            newTileStates[position.x][position.y] = 'grass';
+          }    
+        });         
+      }     
+    });
+    return newTileStates;
+  },
+
+  _getSuccessorBombStates: function(bot, action) {
+    var self = this;
+     // increment bombs' timers + check if any bomb explode + fire them?? 
+    var newBombs = _.chain(this.bombs).filter(function(bomb) { 
+      return !bomb.exploded;
+    }).map(function(bomb) {   
+      return { 
+                position: bomb.position, 
+                strength: bomb.strength, 
+                timer: bomb.timer + 1, 
+                timerMax: bomb.timerMax,
+                exploded: bomb.exploded,
+                fires: []
+              };
+    }).value();
+
+    _.each(newBombs, function(bomb) {
+     if (bomb.timer > bomb.timerMax * createjs.Ticker.getMeasuredFPS()) {
+        self._explode(bomb);
+      }     
+    });
+
+    if (action === 'bomb') {
+      newBombs.push({
+        position: { x: bot.position.x, y: bot.position.y }, 
+        strength: bot.bombStrength, 
+        timer: 0, 
+        timerMax: 2,
+        exploded: false,
+        fires: []
+      }); 
+    }
+    
+    return newBombs;
+  },
+
+  _getSuccessorBotStates: function(bot_id, action, nextPosition) {
+    var self = this;
+    return _.map(this.bots, function(bot) {
+      if(bot.id === bot_id) {
+        var newBotState = self._copy_bot_state(bot);
+        if (action === 'bomb') {
+          newBotState.avaiableBombs = newBotState.avaiableBombs - 1; 
+        } 
+        // is next poisition gonna make the boss killed 
+        newBotState.alive = !self.isFireCollision(nextPosition);
+        newBotState.position = nextPosition;
+        return newBotState;
+      } else {
+        return self._copy_bot_state(bot);
+      }
+    });
+  },        
+
+  _copy_bot_state: function(bot) {
+    return {
+      id: bot.id,
+      avaiableBombs: bot.avaiableBombs,
+      position: { x: bot.position.x, y: bot.position.y },
+      alive: bot.alive,
+      bombStrength: bot.bombStrength
+    };
+  },
+
+  // explode the bombs and return an arrays of `wood` wall positions got destroyed
+  // explode other bombs in range
+  _explode: function(bomb) {
+    bomb.exploded = true;    
+    var positions = this._getDangerPositions(bomb);
+    _.each(positions, function(position) {
+      bomb.fires.push(position);      
+    });
+  },
+
+  _getDangerPositions: function(bomb) {
+    var positions = [];
+    positions.push(bomb.position);
+
+    for (var i = 0; i < 4; i++) {
+        var dirX;
+        var dirY;
+        if (i == 0) { dirX = 1; dirY = 0; }
+        else if (i == 1) { dirX = -1; dirY = 0; }
+        else if (i == 2) { dirX = 0; dirY = 1; }
+        else if (i == 3) { dirX = 0; dirY = -1; }
+
+        for (var j = 1; j <= bomb.strength; j++) {
+            var explode = true;
+            var last = false;
+
+            var position = { x: bomb.position.x + j * dirX, y: bomb.position.y + j * dirY };
+
+            var material = this.tiles[position.x][position.y];
+            if (material === 'wall') { 
+                explode = false;
+                last = true;
+            } else if (material === 'wood') {
+                explode = true;
+                last = true;
+            }
+
+            if (explode) {
+                positions.push(position);
+            }
+
+            if (last) {
+                break;
+            }
+        }
+    }
+
+    return positions;
+  },
+
+  isFireCollision: function(position) {
+    var len = this.bombs.length;
+    for (var i = 0; i < len; i++) {
+        var bomb = this.bombs[i];
+        for (var j = 0; j < bomb.fires.length; j++) {
+            var fire = bomb.fires[j];
+            var collision = bomb.exploded && fire.position.x == position.x && fire.position.y == position.y;
+            if (collision) {
+                return true;
+            }
+        }
+    }
+    return false;
+  },
+
+  // return a sub-set of GameState.POSSIBLE_ACTIONS
+  getPossibleActionsForBot: function(bot_id) {
+    var that = this;
+    return _.filter(this.POSSIBLE_ACTIONS, function(action) {
+        return that._doable_action(bot_id, action);        
+    })
+  },
+
+  _doable_action: function(bot_id, action) {
+    var botState = this._getBotState(bot_id);
+
+    if (!botState.alive) {
+      return false;
+    }
+
+    var nextPosition = Utils.nextPositionAfterAction(action, botState.position);
+    if(action === 'bomb' && botState.avaiableBombs <= 0) {
+      return false;        
+    } 
+
+    return this._isGrassPosition(nextPosition) && !this._isBombPosition(nextPosition);
+  },
+
+  _isBombPosition: function(position) {
+    return _.any(this.bombs, function(bomb) {
+      return bomb.position.x === position.x && bomb.position.y === position.y;    
+    });
+  },
+
+  _isGrassPosition: function(position) {
+    return this.tiles[position.x][position.y] === 'grass';
+  },
+
+  _getBotState: function(bot_id) {
+    return _.find(this.bots, function(bot) {
+      return bot.id === bot_id;    
+    });
+  }
+});

@@ -76,7 +76,6 @@ Bomb = Entity.extend({
 
     update: function() {
         if (this.exploded) { return; }
-
         this.timer++;
         if (this.timer > this.timerMax * createjs.Ticker.getMeasuredFPS()) {
             this.explode();

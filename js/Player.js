@@ -1,3 +1,4 @@
+id = 0;
 Player = Entity.extend({
     id: 0,
 
@@ -53,10 +54,9 @@ Player = Entity.extend({
 
     deadTimer: 0,
 
-    init: function(position, controls, id) {
-        if (id) {
-            this.id = id;
-        }
+    init: function(position, controls) {
+        this.id = id;
+        id++;
 
         if (controls) {
             this.controls = controls;
@@ -109,14 +109,8 @@ Player = Entity.extend({
                     }
                 }
 
-                var unexplodedBombs = 0;
-                for (var i = 0; i < that.bombs.length; i++) {
-                    if (!that.bombs[i].exploded) {
-                        unexplodedBombs++;
-                    }
-                }
-
-                if (unexplodedBombs < that.bombsMax) {
+                
+                if (that._has_extra_bomb()) {
                     var bomb = new Bomb(that.position, that.bombStrength);
                     gGameEngine.stage.addChild(bomb.bmp);
                     that.bombs.push(bomb);
@@ -128,6 +122,21 @@ Player = Entity.extend({
                 }
             });
         }
+    },
+
+    avaiable_bombs: function() {
+        var unexplodedBombs = 0;
+        var numBomb = this.bombs.length;
+        for (var i = 0; i < numBomb; i++) {
+            if (!this.bombs[i].exploded) {
+                unexplodedBombs++;
+            }
+        }    
+        return this.bombsMax - unexplodedBombs;    
+    },
+
+    _has_extra_bomb: function() {        
+        return this.avaiable_bombs() > 0;    
     },
 
     update: function() {
@@ -192,6 +201,7 @@ Player = Entity.extend({
         }
 
         this.handleBonusCollision();
+        console.log(gGameEngine.getCurrentGameState().generateSuccessor(this.id, 'down'));
     },
 
     /**
