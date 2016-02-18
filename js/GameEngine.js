@@ -58,21 +58,21 @@ GameEngine = Class.extend({
             that.setup();
         });
         queue.loadManifest([
-            {id: "playerBoy", src: "img/george.png"},
-            {id: "playerGirl", src: "img/betty.png"},
-            {id: "playerGirl2", src: "img/betty2.png"},
-            {id: "tile_grass", src: "img/tile_grass.png"},
-            {id: "tile_wall", src: "img/tile_wall.png"},
-            {id: "tile_wood", src: "img/tile_wood.png"},
-            {id: "bomb", src: "img/bomb.png"},
-            {id: "fire", src: "img/fire.png"},
-            {id: "bonuses", src: "img/bonuses.png"}
+            {id: "playerBoy", src: "assets/img/george.png"},
+            {id: "playerGirl", src: "assets/img/betty.png"},
+            {id: "playerGirl2", src: "assets/img/betty2.png"},
+            {id: "tile_grass", src: "assets/img/tile_grass.png"},
+            {id: "tile_wall", src: "assets/img/tile_wall.png"},
+            {id: "tile_wood", src: "assets/img/tile_wood.png"},
+            {id: "bomb", src: "assets/img/bomb.png"},
+            {id: "fire", src: "assets/img/fire.png"},
+            {id: "bonuses", src: "assets/img/bonuses.png"}
         ]);
 
         createjs.Sound.addEventListener("fileload", this.onSoundLoaded);
         createjs.Sound.alternateExtensions = ["mp3"];
-        createjs.Sound.registerSound("sound/bomb.ogg", "bomb");
-        createjs.Sound.registerSound("sound/game.ogg", "game");
+        createjs.Sound.registerSound("assets/sound/bomb.ogg", "bomb");
+        createjs.Sound.registerSound("assets/sound/game.ogg", "game");
 
         // Create menu
         this.menu = new Menu();

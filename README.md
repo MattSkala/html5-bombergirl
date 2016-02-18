@@ -14,8 +14,11 @@ Demo: http://bombergirl.matousskala.cz
 Installation
 ------------
 1. Clone this repository: ```git clone https://github.com/MattSkala/html5-bombergirl.git```
-2. ```cd html5-bombergirl```
-3. Download dependencies via [Bower](https://github.com/twitter/bower): ```bower install```
+2. Go to the directory```cd html5-bombergirl```
+3. Install global dependencies ```npm install -g bower && grunt -g```
+3. Install local  dependencies```bower install && npm install```
+4. Run ```grunt``` for create the distribution forder
+5. Run ```node server``` and go to your browser ```http://localhost:78/```
 
 License
 -------
