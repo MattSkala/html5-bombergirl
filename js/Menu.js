@@ -117,7 +117,7 @@ Menu = Class.extend({
         this.views.push(singleTitle2)
 
         var iconsY = modesY + 13;
-        var singleIcon = new createjs.Bitmap("img/betty.png");
+        var singleIcon = new createjs.Bitmap("assets/img/betty.png");
         singleIcon.sourceRect = new createjs.Rectangle(0, 0, 48, 48);
         singleIcon.x = singleX + (modeSize - 48) / 2;
         singleIcon.y = iconsY;
@@ -149,14 +149,14 @@ Menu = Class.extend({
         gGameEngine.stage.addChild(multiTitle2);
         this.views.push(multiTitle2)
 
-        var multiIconGirl = new createjs.Bitmap("img/betty.png");
+        var multiIconGirl = new createjs.Bitmap("assets/img/betty.png");
         multiIconGirl.sourceRect = new createjs.Rectangle(0, 0, 48, 48);
         multiIconGirl.x = multiX + (modeSize - 48) / 2 - 48/2 + 8;
         multiIconGirl.y = iconsY;
         gGameEngine.stage.addChild(multiIconGirl);
         this.views.push(multiIconGirl);
 
-        var multiIconBoy = new createjs.Bitmap("img/betty2.png");
+        var multiIconBoy = new createjs.Bitmap("assets/img/betty2.png");
         multiIconBoy.sourceRect = new createjs.Rectangle(0, 0, 48, 48);
         multiIconBoy.x = multiX + (modeSize - 48) / 2 + 48/2 - 8;
         multiIconBoy.y = iconsY;
