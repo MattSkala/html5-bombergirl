@@ -15,7 +15,10 @@ Installation
 ------------
 1. Clone this repository: ```git clone https://github.com/MattSkala/html5-bombergirl.git```
 2. ```cd html5-bombergirl```
-3. Download dependencies via [Bower](https://github.com/twitter/bower): ```bower install```
+3. Make sure you have `bower` and `simplehttpserver` installed: ```npm install -g bower simplehttpserver```
+3. Download dependencies: ```bower install```
+4. Run the HTTP server: ```simplehttpserver```
+5. Launch http://127.0.0.1:8000
 
 License
 -------
