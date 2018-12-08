@@ -19,8 +19,8 @@ Installation
 
 License
 -------
-The game soundtrack (composed by me) and the source code is licensed under Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-![CC BY-NC-SA](http://i.creativecommons.org/l/by-nc-sa/3.0/80x15.png)
+The source code is licensed under MIT License. The game soundtrack is licensed under Creative Commons Attribution-ShareAlike 4.0 International License.
+![CC BY-SA](http://i.creativecommons.org/l/by-sa/4.0/80x15.png).
 
 Credits
 -------
