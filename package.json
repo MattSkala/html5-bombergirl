@@ -1,0 +1,22 @@
+{
+  "bugs": {
+    "url": "https://github.com/MattSkala/html5-bombergirl/issues"
+  },
+  "description": "HTML5 Bombergirl",
+  "devDependencies": {
+    "bower": "1.8.14",
+    "http-server": "14.1.1"
+  },
+  "homepage": "https://github.com/MattSkala/html5-bombergirl#readme",
+  "license": "MIT",
+  "name": "html5-bombergirl",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MattSkala/html5-bombergirl.git"
+  },
+  "scripts": {
+    "postinstall": "bower install",
+    "start": "http-server ."
+  },
+  "version": "1.0.0"
+}
